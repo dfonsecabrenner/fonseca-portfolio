@@ -6,6 +6,7 @@
 <title>Fonseca Portfolio</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -69,44 +70,76 @@ function SectionHeader({title,sub,actions}){
 }
 
 // ─── RE DATA ──────────────────────────────────────────────────────────────────
-const PISOS_BASE=[
-  {id:"82-1F",proyecto:"Alcoi 80-82 · Pego",renta:630,tipo:"Propiedad",pendiente:30998,venc:"01/06/2026",
-   finca:"28.574",catastral:"02378B8YJ5003N0039HL",ibi:412.63,sup:92.10,precio:55000,
-   inq:{n:"Andrea Fernanda Cobo Salcedo",doc:"Pasaporte AT010612",tel:"+34 613 25 80 00",email:"andrea31cobo@gmail.com",inicio:"15/08/2023",ultimoInc:"01/01/2025",fianza:1200,ibe:"858641112",hid:"11442388",nota:"Fianza pagada por Alberto."},
-   empadronados:["Andrea Fernanda Cobo Salcedo"],
-   historial:[],
-   alertas:["Pendiente 30.998 € a Taurus — vence 01/06/2026","Sin addenda subida renta 630 €"]},
-  {id:"80-3A",proyecto:"Alcoi 80-82 · Pego",renta:650,tipo:"Propiedad",pendiente:20998,venc:"01/06/2026",
-   finca:"28.567",catastral:"02378B8YJ5003N0034AF",ibi:413.20,sup:93.24,precio:55000,
-   inq:{n:"Paola Estefanía Álvarez Parra",doc:"Pasaporte AX680072",tel:"—",email:"—",inicio:"01/08/2023",ultimoInc:"01/01/2026",fianza:null,ibe:"942352245",hid:"11440780",nota:"Paga vía Adrián Villena López. Sin addenda 650 €."},
-   empadronados:["Paola Estefanía Álvarez Parra"],
-   historial:[],
-   alertas:["Pendiente 20.998 € a Taurus — vence 01/06/2026","Pagos vía intermediario — regularizar"]},
-  {id:"82-4E",proyecto:"Alcoi 80-82 · Pego",renta:700,tipo:"Propiedad",pendiente:0,venc:null,
-   finca:"28.579",catastral:"02378B8YJ5003N0044KZ",ibi:408.97,sup:92.25,precio:57500,
-   inq:{n:"Ernesto Parra Suarez",doc:"Pasaporte BG145181",tel:"—",email:"—",inicio:"01/03/2026",ultimoInc:"01/03/2026",fianza:1400,ibe:"942351605",hid:"—",nota:""},
-   empadronados:["Ernesto Parra Suarez"],
-   historial:[{n:"Jan Wiktor Maleta",doc:"—",inicio:"—",salida:"12/2025",nota:"Inquilino anterior"}],
-   alertas:["Siniestro agua Ocaso — notificar a Allianz 056270244"]},
-  {id:"82-1E",proyecto:"Alcoi 80-82 · Pego",renta:650,tipo:"Subarriendo",pendiente:null,
-   finca:"28.573",catastral:"02378B8YJ5003N0038GK",ibi:0,sup:null,precio:null,opcion:57500,vencOp:"30/06/2026",
-   inq:{n:"Alix Yesenia Acevedo Nariño",doc:"Pasaporte AY268968",tel:"—",email:"—",inicio:"01/05/2024",ultimoInc:"01/07/2025",fianza:1300,ibe:"894885418",hid:"11834339",nota:"Paga Iberdrola e Hidraqua puntualmente."},
-   empadronados:["Alix Yesenia Acevedo Nariño"],
-   historial:[],
-   taurus:350,alertas:["URGENTE: Opción de compra 57.500 € vence 30/06/2026"]},
-  {id:"82-2E",proyecto:"Alcoi 80-82 · Pego",renta:700,tipo:"Subarriendo",pendiente:null,
-   finca:"28.575",catastral:"02378B8YJ5003N0040FJ",ibi:0,sup:null,precio:null,opcion:63000,vencOp:"31/08/2026",
-   inq:{n:"Dilmer Gonzalo Murillo Campos",doc:"Pasaporte AX029932",tel:"—",email:"—",inicio:"01/11/2024",ultimoInc:"01/09/2025",fianza:1400,ibe:"911435657",hid:"10133441",nota:"Impagó abr-2025 por avería eléctrica. Cuadro nuevo may-2025."},
-   empadronados:["Dilmer Gonzalo Murillo Campos"],
-   historial:[],
-   taurus:400,alertas:["URGENTE: Opción de compra 63.000 € vence 31/08/2026","Contrato firmado por Andrés Álvarez — sin título"]},
-  {id:"82-3F",proyecto:"Alcoi 80-82 · Pego",renta:670,tipo:"Subarriendo",pendiente:null,
-   finca:"28.578",catastral:"02378B8YJ5003N0043JB",ibi:0,sup:null,precio:null,opcion:64000,vencOp:"31/08/2026",
-   inq:{n:"Claudia Joanna Sierra Enciso",doc:"NIE Z1149561A",tel:"—",email:"—",inicio:"10/09/2024",ultimoInc:"01/10/2025",fianza:1300,ibe:"911435839",hid:"11834433",nota:"Contrato sin firma de Claudia — riesgo legal."},
-   empadronados:["Claudia Joanna Sierra Enciso"],
-   historial:[],
-   taurus:400,alertas:["URGENTE: Opción de compra 64.000 € vence 31/08/2026","⚠ Contrato sin firma de Claudia"]},
+// Fallback data (shown while loading or if DB unavailable)
+const PISOS_FALLBACK=[
+  {id:"82-1F",proyecto:"Alcoi 80-82 · Pego",renta:630,tipo:"Propiedad",pendiente:30998,venc:"01/06/2026",finca:"28.574",catastral:"—",ibi:412.63,sup:92.10,precio:55000,inq:{n:"—",doc:"—",tel:"—",email:"—",inicio:"—",ultimoInc:"—",fianza:null,ibe:"—",hid:"—",nota:""},empadronados:[],historial:[],alertas:["Pendiente 30.998 € a Taurus — vence 01/06/2026"]},
+  {id:"80-3A",proyecto:"Alcoi 80-82 · Pego",renta:650,tipo:"Propiedad",pendiente:20998,venc:"01/06/2026",finca:"28.567",catastral:"—",ibi:413.20,sup:93.24,precio:55000,inq:{n:"—",doc:"—",tel:"—",email:"—",inicio:"—",ultimoInc:"—",fianza:null,ibe:"—",hid:"—",nota:""},empadronados:[],historial:[],alertas:["Pendiente 20.998 € a Taurus — vence 01/06/2026"]},
+  {id:"82-4E",proyecto:"Alcoi 80-82 · Pego",renta:700,tipo:"Propiedad",pendiente:0,venc:null,finca:"28.579",catastral:"—",ibi:408.97,sup:92.25,precio:57500,inq:{n:"—",doc:"—",tel:"—",email:"—",inicio:"—",ultimoInc:"—",fianza:null,ibe:"—",hid:"—",nota:""},empadronados:[],historial:[],alertas:[]},
+  {id:"82-1E",proyecto:"Alcoi 80-82 · Pego",renta:650,tipo:"Subarriendo",pendiente:null,finca:"28.573",catastral:"—",ibi:0,sup:null,precio:null,opcion:57500,vencOp:"30/06/2026",inq:{n:"—",doc:"—",tel:"—",email:"—",inicio:"—",ultimoInc:"—",fianza:null,ibe:"—",hid:"—",nota:""},empadronados:[],historial:[],taurus:350,alertas:["URGENTE: Opción de compra 57.500 € vence 30/06/2026"]},
+  {id:"82-2E",proyecto:"Alcoi 80-82 · Pego",renta:700,tipo:"Subarriendo",pendiente:null,finca:"28.575",catastral:"—",ibi:0,sup:null,precio:null,opcion:63000,vencOp:"31/08/2026",inq:{n:"—",doc:"—",tel:"—",email:"—",inicio:"—",ultimoInc:"—",fianza:null,ibe:"—",hid:"—",nota:""},empadronados:[],historial:[],taurus:400,alertas:["URGENTE: Opción de compra 63.000 € vence 31/08/2026"]},
+  {id:"82-3F",proyecto:"Alcoi 80-82 · Pego",renta:670,tipo:"Subarriendo",pendiente:null,finca:"28.578",catastral:"—",ibi:0,sup:null,precio:null,opcion:64000,vencOp:"31/08/2026",inq:{n:"—",doc:"—",tel:"—",email:"—",inicio:"—",ultimoInc:"—",fianza:null,ibe:"—",hid:"—",nota:""},empadronados:[],historial:[],taurus:400,alertas:["URGENTE: Opción de compra 64.000 € vence 31/08/2026"]},
 ];
+
+// Load pisos from Supabase and transform to app format
+async function loadPisosFromDB(){
+  try{
+    const[propsRes,tenantsRes,empadRes,histRes]=await Promise.all([
+      supabase.from('re_properties').select('*').order('piso_id'),
+      supabase.from('re_tenants').select('*').eq('activo',true),
+      supabase.from('re_empadronados').select('*'),
+      supabase.from('re_tenant_history').select('*'),
+    ]);
+    if(propsRes.error)throw propsRes.error;
+    return propsRes.data.map(p=>{
+      const tenant=tenantsRes.data?.find(t=>t.property_id===p.id)||{};
+      const empad=empadRes.data?.filter(e=>e.property_id===p.id).map(e=>e.nombre)||[];
+      const hist=histRes.data?.filter(h=>h.property_id===p.id).map(h=>({n:h.nombre,doc:h.documento,inicio:h.inicio,salida:h.salida,nota:h.nota}))||[];
+      return{
+        id:p.piso_id, proyecto:p.proyecto, tipo:p.tipo, renta:+p.renta,
+        finca:p.finca, catastral:p.catastral, sup:p.sup, ibi:+p.ibi,
+        precio:p.precio?+p.precio:null, pendiente:p.pendiente?+p.pendiente:null,
+        venc:p.venc_taurus, opcion:p.opcion?+p.opcion:null, vencOp:p.venc_opcion,
+        taurus:p.taurus_mensual?+p.taurus_mensual:null,
+        alertas:p.alertas||[],
+        empadronados:empad, historial:hist,
+        dbId:p.id, // keep DB id for updates
+        inq:{
+          n:tenant.nombre||'—', doc:tenant.documento||'—',
+          tel:tenant.telefono||'—', email:tenant.email||'—',
+          inicio:tenant.inicio||'—', ultimoInc:tenant.ultimo_inc||'—',
+          fianza:tenant.fianza?+tenant.fianza:null,
+          ibe:tenant.ibe||'—', hid:tenant.hid||'—',
+          nota:tenant.nota||'', tenantId:tenant.id
+        }
+      };
+    });
+  }catch(e){
+    console.error('DB load failed, using fallback:',e);
+    return null;
+  }
+}
+
+// Save piso changes back to DB
+async function savePisoToDB(piso){
+  if(!piso.dbId)return;
+  await supabase.from('re_properties').update({
+    tipo:piso.tipo, renta:piso.renta, finca:piso.finca, catastral:piso.catastral,
+    sup:piso.sup, ibi:piso.ibi, precio:piso.precio, pendiente:piso.pendiente,
+    venc_taurus:piso.venc, opcion:piso.opcion, venc_opcion:piso.vencOp,
+    taurus_mensual:piso.taurus, alertas:piso.alertas, proyecto:piso.proyecto,
+    updated_at:new Date().toISOString()
+  }).eq('id',piso.dbId);
+  if(piso.inq?.tenantId){
+    await supabase.from('re_tenants').update({
+      nombre:piso.inq.n, documento:piso.inq.doc, telefono:piso.inq.tel,
+      email:piso.inq.email, inicio:piso.inq.inicio, ultimo_inc:piso.inq.ultimoInc,
+      fianza:piso.inq.fianza, ibe:piso.inq.ibe, hid:piso.inq.hid, nota:piso.inq.nota
+    }).eq('id',piso.inq.tenantId);
+  }
+}
+
+const PISOS_BASE=PISOS_FALLBACK; // will be replaced by DB data on load
+
 const RE_CATS=["Renta cobrada","Taurus","IBI","Seguro","Basura","Comunidad","Iberdrola","Hidraqua","Mantenimiento","Amortización","Notaría","Otros","Ignorar"];
 const RE_RULES=[
   {re:/andrea|cobo/i,c:"Renta cobrada",p:"82-1F"},{re:/paola|villena/i,c:"Renta cobrada",p:"80-3A"},
@@ -209,6 +242,17 @@ function Sidebar({mod,setMod,alerts}){
       h("div",{style:{fontSize:10,fontWeight:700,color:T.sAct,textTransform:"uppercase",letterSpacing:.9,marginBottom:3}},"⚠ URGENTE"),
       h("div",{className:"num",style:{fontSize:12,color:"#F4A06A",fontWeight:700}},"51.998 € · Taurus"),
       h("div",{style:{fontSize:10,color:T.sTxt,marginTop:1}},"Vence 01/06/2026")
+    ),
+    user&&h("div",{style:{padding:"12px 16px",borderTop:`1px solid ${T.sDiv}`,display:"flex",alignItems:"center",gap:9}},
+      h("div",{style:{width:28,height:28,borderRadius:"50%",background:T.acc,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:700,color:"#fff",flexShrink:0}},
+        user.email?user.email[0].toUpperCase():"D"
+      ),
+      h("div",{style:{flex:1,minWidth:0}},
+        h("div",{style:{fontSize:11,fontWeight:600,color:"#fff",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},
+          user.user_metadata?.full_name||user.email
+        )
+      ),
+      onSignOut&&h("button",{onClick:onSignOut,title:"Sign out",style:{border:"none",background:"none",color:T.sTxt,cursor:"pointer",fontSize:14,padding:2}},"⎋")
     )
   );
 }
@@ -389,7 +433,7 @@ function RealEstateModule({pisos,setPisos,rePagos,setRePagos,reGastos,setReGasto
   const sP=d=>{setRePagos(d);store.save("re_p",d);};
   const sG=d=>{setReGastos(d);store.save("re_g",d);};
   const sE=d=>{setExts(d);store.save("re_exts",d);};
-  const sPisos=d=>{setPisos(d);store.save("re_pisos",d);};
+  const sPisos=d=>{setPisos(d);store.save("re_pisos",d);if(d.length)d.forEach(p=>{if(p.dbId)savePisoToDB(p);});};
   const opMod=(t,p)=>{setMp(p||null);setModal(t);};
   const goToPiso=id=>{setSelPiso(id);setView("pisos");};
   const subNav=[
@@ -1462,23 +1506,99 @@ function ShoppingModule({items,setItems}){
   );
 }
 
+// ─── SUPABASE ─────────────────────────────────────────────────────────────────
+const SUPA_URL="https://rvldlwkujmxwdgqhoafq.supabase.co";
+const SUPA_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2bGRsd2t1am14d2RncWhvYWZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MzMxNDYsImV4cCI6MjA5MDMwOTE0Nn0.9YIUe9Xkd6JyRPrMkTsKFl_W5yuqD2ctbJtoz-ZirAY";
+const supabase=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+
+// ─── LOGIN SCREEN ─────────────────────────────────────────────────────────────
+function LoginScreen(){
+  const[loading,setLoading]=useState(false);
+  const[error,setError]=useState(null);
+  const signIn=async()=>{
+    setLoading(true);setError(null);
+    const{error:e}=await supabase.auth.signInWithOAuth({
+      provider:"google",
+      options:{redirectTo:window.location.origin}
+    });
+    if(e){setError(e.message);setLoading(false);}
+  };
+  return h("div",{style:{height:"100vh",background:T.bg,display:"flex",alignItems:"center",justifyContent:"center"}},
+    h("div",{style:{background:T.card,borderRadius:20,padding:"48px 52px",textAlign:"center",boxShadow:"0 20px 60px rgba(0,0,0,.1)",maxWidth:400,width:"100%"}},
+      h("div",{className:"serif",style:{fontSize:32,fontWeight:700,color:T.txt,marginBottom:4}},"Fonseca"),
+      h("div",{className:"serif",style:{fontSize:32,fontStyle:"italic",color:T.acc,marginBottom:8}},"Portfolio"),
+      h("div",{style:{fontSize:13,color:T.mut,marginBottom:40,letterSpacing:.3}},"Family · Real Estate · Finance"),
+      h("button",{onClick:signIn,disabled:loading,
+        style:{width:"100%",padding:"14px 20px",background:"#fff",border:`1.5px solid ${T.brd}`,borderRadius:12,
+          display:"flex",alignItems:"center",justifyContent:"center",gap:12,fontSize:15,fontWeight:600,
+          color:T.txt,cursor:"pointer",boxShadow:"0 2px 8px rgba(0,0,0,.06)",transition:"box-shadow .15s"},
+        onMouseEnter:e=>e.currentTarget.style.boxShadow="0 4px 16px rgba(0,0,0,.12)",
+        onMouseLeave:e=>e.currentTarget.style.boxShadow="0 2px 8px rgba(0,0,0,.06)"},
+        h("svg",{width:20,height:20,viewBox:"0 0 48 48"},
+          h("path",{fill:"#EA4335",d:"M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"}),
+          h("path",{fill:"#4285F4",d:"M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"}),
+          h("path",{fill:"#FBBC05",d:"M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"}),
+          h("path",{fill:"#34A853",d:"M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"})
+        ),
+        loading?"Conectando...":"Continuar con Google"
+      ),
+      error&&h("div",{style:{marginTop:14,fontSize:13,color:T.err,padding:"8px 12px",background:T.eLt,borderRadius:8}},error),
+      h("div",{style:{marginTop:28,fontSize:12,color:T.mut,lineHeight:1.7}},"Acceso restringido · Solo para la familia Fonseca")
+    )
+  );
+}
+
 // ─── ROOT APP ──────────────────────────────────────────────────────────────────
 function App(){
+  const[session,setSession]=useState(undefined);
   const[mod,setMod]=useState("home");
-  const[pisos,setPisos]=useState(()=>{const saved=store.load("re_pisos",null);return saved||PISOS_BASE;});
+  const[pisos,setPisos]=useState(PISOS_FALLBACK);
+  const[pisosLoaded,setPisosLoaded]=useState(false);
   const[rePagos,setRePagos]=useState(()=>store.load("re_p",[]));
   const[reGastos,setReGastos]=useState(()=>store.load("re_g",[]));
   const[finTxns,setFinTxns]=useState(()=>store.load("fin_txns",FIN_SAMPLE));
   const[kClients,setKClients]=useState(()=>store.load("k_clients",K_CLIENTS_DEFAULT));
   const[kPos,setKPos]=useState(()=>store.load("k_pos",K_POSITIONS_DEFAULT));
   const[shopItems,setShopItems]=useState(()=>store.load("shop_items",SHOP_SAMPLE));
+
+  useEffect(()=>{
+    supabase.auth.getSession().then(({data:{session:s}})=>setSession(s));
+    const{data:{subscription}}=supabase.auth.onAuthStateChange((_,s)=>{
+      setSession(s);
+      // Load pisos from DB when user logs in
+      if(s&&!pisosLoaded){
+        loadPisosFromDB().then(data=>{
+          if(data){setPisos(data);setPisosLoaded(true);}
+        });
+      }
+    });
+    return()=>subscription.unsubscribe();
+  },[]);
+
+  // Also load pisos if session already exists
+  useEffect(()=>{
+    if(session&&!pisosLoaded){
+      loadPisosFromDB().then(data=>{
+        if(data){setPisos(data);setPisosLoaded(true);}
+      });
+    }
+  },[session]);
+
   useEffect(()=>store.save("fin_txns",finTxns),[finTxns]);
   useEffect(()=>store.save("k_clients",kClients),[kClients]);
   useEffect(()=>store.save("k_pos",kPos),[kPos]);
   useEffect(()=>store.save("shop_items",shopItems),[shopItems]);
-  const alerts={re:PISOS_BASE.reduce((s,p)=>s+p.alertas.filter(a=>a.includes("URGENTE")).length,0),opos:kPos.filter(o=>o.status==="rejected").length};
+
+  // Loading
+  if(session===undefined)return h("div",{style:{height:"100vh",background:T.bg,display:"flex",alignItems:"center",justifyContent:"center",gap:10,fontSize:14,color:T.mut}},"Cargando...");
+
+  // Not logged in
+  if(!session)return h(LoginScreen,null);
+
+  // Logged in
+  const alerts={re:pisos.reduce((s,p)=>s+(p.alertas||[]).filter(a=>a.includes("URGENTE")).length,0),opos:kPos.filter(o=>o.status==="rejected").length};
   return h("div",{style:{display:"flex",height:"100vh",background:T.bg,overflow:"hidden"}},
-    h(Sidebar,{mod,setMod,alerts}),
+    h(Sidebar,{mod,setMod,alerts,user:session.user,onSignOut:()=>supabase.auth.signOut()}),
     h("main",{style:{flex:1,overflow:"auto",padding:"22px 26px"}},
       mod==="home"&&h(HomeDashboard,{pisos,rePagos,finTxns,oposItems:kPos,shopItems,setMod}),
       mod==="re"&&h(RealEstateModule,{pisos,setPisos,rePagos,setRePagos,reGastos,setReGastos}),
