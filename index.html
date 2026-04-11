@@ -24,7 +24,6 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:#D4753A!import
 <script>
 const{useState,useEffect,useRef,useCallback}=React;
 const h=React.createElement;
-
 // ─── DESIGN TOKENS ────────────────────────────────────────────────────────────
 const T={
   bg:"#F4EDE2",card:"#FFFDF8",side:"#1C2B1E",sDiv:"#283D2B",sTxt:"#8AAF8E",sAct:"#F0A06A",
@@ -32,7 +31,6 @@ const T={
   ok:"#3D6B4F",oLt:"#EBF4EE",err:"#8B2E2E",eLt:"#FBEAEA",wrn:"#7A5C1E",wLt:"#FFF8E6",
   blue:"#1B3A8A",blueLt:"#EBF0FB"
 };
-
 // ─── SHARED UTILS ─────────────────────────────────────────────────────────────
 const e$=n=>{const v=+(n||0);const[i,d]=v.toFixed(2).split(".");return i.replace(/\B(?=(\d{3})+(?!\d))/g,".")+","+d+" €";};
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,5);
@@ -41,7 +39,6 @@ const store={
   load:(k,def)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):def;}catch{return def;}},
   save:(k,d)=>{try{localStorage.setItem(k,JSON.stringify(d));}catch{}}
 };
-
 // ─── SHARED COMPONENTS ────────────────────────────────────────────────────────
 function Btn({children,onClick,v="p",sm,style:sx={}}){
   const vs={p:{background:T.acc,color:"#FFF",border:"none"},s:{background:T.card,color:T.txt,border:`1px solid ${T.brd}`},g:{background:"transparent",color:T.mut,border:"none"}};
@@ -68,7 +65,6 @@ function SectionHeader({title,sub,actions}){
     actions&&h("div",{style:{display:"flex",gap:9,alignItems:"center"}},actions)
   );
 }
-
 // ─── RE DATA ──────────────────────────────────────────────────────────────────
 // Fallback data (shown while loading or if DB unavailable)
 const PISOS_FALLBACK=[
@@ -79,7 +75,6 @@ const PISOS_FALLBACK=[
   {id:"82-2E",proyecto:"Alcoi 80-82 · Pego",renta:700,tipo:"Subarriendo",pendiente:null,finca:"28.575",catastral:"—",ibi:0,sup:null,precio:null,opcion:63000,vencOp:"31/08/2026",inq:{n:"—",doc:"—",tel:"—",email:"—",inicio:"—",ultimoInc:"—",fianza:null,ibe:"—",hid:"—",nota:""},empadronados:[],historial:[],taurus:400,alertas:["URGENTE: Opción de compra 63.000 € vence 31/08/2026"]},
   {id:"82-3F",proyecto:"Alcoi 80-82 · Pego",renta:670,tipo:"Subarriendo",pendiente:null,finca:"28.578",catastral:"—",ibi:0,sup:null,precio:null,opcion:64000,vencOp:"31/08/2026",inq:{n:"—",doc:"—",tel:"—",email:"—",inicio:"—",ultimoInc:"—",fianza:null,ibe:"—",hid:"—",nota:""},empadronados:[],historial:[],taurus:400,alertas:["URGENTE: Opción de compra 64.000 € vence 31/08/2026"]},
 ];
-
 // Load pisos from Supabase and transform to app format
 async function loadPisosFromDB(){
   try{
@@ -118,7 +113,6 @@ async function loadPisosFromDB(){
     return null;
   }
 }
-
 // Save piso changes back to DB
 async function savePisoToDB(piso){
   if(!piso.dbId)return;
@@ -137,9 +131,7 @@ async function savePisoToDB(piso){
     }).eq('id',piso.inq.tenantId);
   }
 }
-
 const PISOS_BASE=PISOS_FALLBACK; // will be replaced by DB data on load
-
 const RE_CATS=["Renta cobrada","Taurus","IBI","Seguro","Basura","Comunidad","Iberdrola","Hidraqua","Mantenimiento","Amortización","Notaría","Otros","Ignorar"];
 const RE_RULES=[
   {re:/andrea|cobo/i,c:"Renta cobrada",p:"82-1F"},{re:/paola|villena/i,c:"Renta cobrada",p:"80-3A"},
@@ -149,7 +141,6 @@ const RE_RULES=[
   {re:/suma|ibi/i,c:"IBI",p:""},{re:/occident|allianz|seguro/i,c:"Seguro",p:""},{re:/comunidad|adfin/i,c:"Comunidad",p:""},
 ];
 const autoCatRE=d=>{for(const r of RE_RULES)if(r.re.test(d||""))return{c:r.c,p:r.p};return{c:"",p:""};};
-
 // ─── FINANCE DATA ─────────────────────────────────────────────────────────────
 const FIN_CATS=[
   {id:"alimentacion",label:"Alimentación",icon:"🛒",color:"#3D6B4F"},
@@ -186,9 +177,7 @@ const FIN_SAMPLE=[
   {id:"f14",fecha:"2026-02-20",desc:"NETFLIX",monto:-17.99,cat:"ocio",persona:"Familia",tienda:null},
   {id:"f15",fecha:"2026-02-15",desc:"DM DROGERIE",monto:-38.40,cat:"limpieza",persona:"Daniela",tienda:null},
 ];
-
 // ─── OPOS DATA ─────────────────────────────────────────────────────────────────
-
 // ─── SHOPPING DATA ─────────────────────────────────────────────────────────────
 const TIENDAS=["ALDI","HIT","Fresno","Bebidas"];
 const ALDI_CATS=["Frutas y verduras","Proteínas","Carbohidratos","Especias","Dulces","Bebidas","Aldi specials","Limpieza","Bebés","Refrigerados","Café y té","Congelados"];
@@ -211,7 +200,6 @@ const SHOP_SAMPLE=[
   {id:"s16",tienda:"Bebidas",item:"Zumo naranja x6",cat:"General",done:false},
   {id:"s17",tienda:"Bebidas",item:"Agua con gas",cat:"General",done:false},
 ];
-
 // ─── SIDEBAR ───────────────────────────────────────────────────────────────────
 const MODULES=[
   {id:"home",icon:"⊞",label:"Dashboard"},
@@ -220,8 +208,7 @@ const MODULES=[
   {id:"opos",icon:"⚖️",label:"Fonseca Kanzlei"},
   {id:"shopping",icon:"🛒",label:"Shopping"},
 ];
-
-function Sidebar({mod,setMod,alerts}){
+function Sidebar({mod,setMod,alerts,user,onSignOut}){
   return h("aside",{style:{width:200,background:T.side,display:"flex",flexDirection:"column",flexShrink:0}},
     h("div",{style:{padding:"22px 16px 16px",borderBottom:`1px solid ${T.sDiv}`}},
       h("div",{className:"serif",style:{fontSize:19,fontWeight:700,color:"#FFF",lineHeight:1.15}},"Fonseca"),
@@ -256,7 +243,6 @@ function Sidebar({mod,setMod,alerts}){
     )
   );
 }
-
 // ─── MODULE: HOME DASHBOARD ─────────────────────────────────────────────────────
 function HomeDashboard({pisos,rePagos,finTxns,oposItems,shopItems,setMod}){
   const now=new Date();
@@ -267,7 +253,6 @@ function HomeDashboard({pisos,rePagos,finTxns,oposItems,shopItems,setMod}){
   const oposPend=oposItems.filter(o=>o.status==="pendiente"||o.status==="vencido").length;
   const shopPend=shopItems.filter(s=>!s.done).length;
   const portfolioVal=pisos.filter(p=>p.precio).reduce((s,p)=>s+(p.precio||0),0);
-
   return h("div",null,
     h("div",{style:{marginBottom:24}},
       h("div",{style:{fontSize:11,fontWeight:600,color:T.mut,textTransform:"uppercase",letterSpacing:.8,marginBottom:5}},"Panel de control"),
@@ -349,11 +334,9 @@ function HomeDashboard({pisos,rePagos,finTxns,oposItems,shopItems,setMod}){
     )
   );
 }
-
 // ─── MODULE: REAL ESTATE (full existing) ────────────────────────────────────────
 const IS={width:"100%",padding:"8px 11px",border:`1px solid ${T.brd}`,borderRadius:8,fontSize:13,background:T.card,color:T.txt};
 const LBL={fontSize:11,fontWeight:700,color:T.mut,textTransform:"uppercase",letterSpacing:.6,display:"block",marginBottom:5};
-
 function REDashboard({pisos,pagos,gastos,go,goToPiso,opMod,onAddPiso}){
   const now=new Date();
   const[mes,setMes]=useState(now.getMonth());
@@ -422,7 +405,6 @@ function REDashboard({pisos,pagos,gastos,go,goToPiso,opMod,onAddPiso}){
     ))
   );
 }
-
 function RealEstateModule({pisos,setPisos,rePagos,setRePagos,reGastos,setReGastos}){
   const[view,setView]=useState("dash");
   const[selPiso,setSelPiso]=useState(null);
@@ -460,7 +442,6 @@ function RealEstateModule({pisos,setPisos,rePagos,setRePagos,reGastos,setReGasto
     showAddPiso&&h(AddPisoModal,{onClose:()=>setShowAddPiso(false),onSave:p=>{sPisos([...pisos,p]);setShowAddPiso(false);}})
   );
 }
-
 function REPisos({pisos,savePisos,initialSel,onSelChange}){
   const[sel,setSel]=useState(initialSel||null);
   const[tab,setTab]=useState("legal");
@@ -470,11 +451,9 @@ function REPisos({pisos,savePisos,initialSel,onSelChange}){
   const[showEndTenant,setShowEndTenant]=useState(false);
   const[endDate,setEndDate]=useState("");
   const p=pisos.find(x=>x.id===sel);
-
   useEffect(()=>{if(initialSel){setSel(initialSel);}}, [initialSel]);
   const goBack=()=>{setSel(null);setEditMode(false);setTab("legal");if(onSelChange)onSelChange(null);};
   const select=id=>{setSel(id);setTab("legal");setEditMode(false);if(onSelChange)onSelChange(id);};
-
   const saveEdit=()=>{
     savePisos(pisos.map(x=>x.id===p.id?{...x,...editData}:x));
     setEditMode(false);setEditData(null);
@@ -490,7 +469,6 @@ function REPisos({pisos,savePisos,initialSel,onSelChange}){
     savePisos(pisos.map(x=>x.id===p.id?{...x,historial:[...(x.historial||[]),hist],inq:{...x.inq,n:"—",doc:"—",inicio:"—",salida:endDate}}:x));
     setShowEndTenant(false);setEndDate("");
   };
-
   // ── DETAIL VIEW ──
   if(p){
     const es=(k,v)=>setEditData(d=>({...d,[k]:v}));
@@ -598,7 +576,6 @@ function REPisos({pisos,savePisos,initialSel,onSelChange}){
       )
     );
   }
-
   // ── LIST VIEW ──
   return h("div",null,
     h(SectionHeader,{title:"Pisos",sub:`${pisos.length} apartamentos`}),
@@ -624,7 +601,6 @@ function REPisos({pisos,savePisos,initialSel,onSelChange}){
     )
   );
 }
-
 function AddPisoModal({onClose,onSave}){
   const[f,setF]=useState({id:"",proyecto:"Alcoi 80-82 · Pego",renta:"",tipo:"Propiedad",finca:"",catastral:"",sup:"",ibi:"",precio:"",inq:{n:"",doc:"",tel:"",email:"",inicio:"",fianza:"",ibe:"",hid:"",nota:"",ultimoInc:""},empadronados:[],historial:[],alertas:[]});
   const s=(k,v)=>setF(x=>({...x,[k]:v}));
@@ -661,7 +637,6 @@ function AddPisoModal({onClose,onSave}){
     )
   );
 }
-
 function REInquilinos({pisos,savePisos}){
   const[sel,setSel]=useState(null);
   const p=pisos.find(x=>x.id===sel);
@@ -714,7 +689,6 @@ function REInquilinos({pisos,savePisos}){
     )
   );
 }
-
 function REAlertas(){
   const crit=[
     {t:"Condición resolutoria Taurus",d:"51.998 € pendientes (82-1F: 30.998 € + 80-3A: 20.998 €). Sin pago antes del 01/06/2026, Taurus puede resolver la compraventa.",f:"01/06/2026",ps:["82-1F","80-3A"]},
@@ -746,7 +720,6 @@ function REAlertas(){
     )
   );
 }
-
 function REExtracto({exts,saveExts,pagos,savePagos,gastos,saveGastos}){
   const[tab,setTab]=useState("load");
   const[drag,setDrag]=useState(false);
@@ -792,7 +765,6 @@ function REExtracto({exts,saveExts,pagos,savePagos,gastos,saveGastos}){
     )
   );
 }
-
 function REPagos({pagos,savePagos,pisos:pisosP}){
   const pisosRef=pisosP||PISOS_BASE;
   const list=[...pagos].sort((a,b)=>(b.fecha||"").localeCompare(a.fecha||""));
@@ -817,7 +789,6 @@ function REPagos({pagos,savePagos,pisos:pisosP}){
     )
   );
 }
-
 function REGastos({gastos,saveGastos}){
   const list=[...gastos].sort((a,b)=>(b.fecha||"").localeCompare(a.fecha||""));
   return h("div",null,
@@ -840,7 +811,6 @@ function REGastos({gastos,saveGastos}){
     )
   );
 }
-
 function REFiscal({pagos,gastos}){
   const[año,setAño]=useState(new Date().getFullYear());
   const pA=pagos.filter(p=>+p.año===año),gA=gastos.filter(g=>g.fecha&&g.fecha.startsWith(String(año)));
@@ -859,7 +829,6 @@ function REFiscal({pagos,gastos}){
     )
   );
 }
-
 function REPagoForm({onClose,onSave,pisoId,pisos:pisosP}){
   const pisosRef=pisosP||PISOS_BASE;
   const[f,setF]=useState({pisoId:pisoId||"",mes:new Date().getMonth(),año:new Date().getFullYear(),monto:"",metodo:"Transferencia"});
@@ -885,7 +854,6 @@ function REPagoForm({onClose,onSave,pisoId,pisos:pisosP}){
     )
   );
 }
-
 function REGastoForm({onClose,onSave,pisos:pisosP}){
   const pisosRef=pisosP||PISOS_BASE;
   const[f,setF]=useState({pisoId:"",categoria:"",descripcion:"",monto:"",fecha:new Date().toISOString().slice(0,10)});
@@ -910,7 +878,6 @@ function REGastoForm({onClose,onSave,pisos:pisosP}){
     )
   );
 }
-
 // ─── MODULE: FINANCE (LUPA) ─────────────────────────────────────────────────────
 function FinanceModule({txns,setTxns}){
   const[view,setView]=useState("txns");
@@ -1040,7 +1007,6 @@ function FinanceModule({txns,setTxns}){
     )
   );
 }
-
 // ─── MODULE: FONSECA KANZLEI ────────────────────────────────────────────────────
 const GEGENKONTEN=[
   {v:"4530",l:"4530 — Kfz / Tanken"},{v:"4550",l:"4550 — Parking"},{v:"4560",l:"4560 — Maut"},
@@ -1084,7 +1050,6 @@ const K_POSITIONS_DEFAULT=[
   {id:"s2",cid:"sonnenglas",bf:"SG-2026-002",date:"15.03.2026",vendor:"DHL Express",amount:47.20,status:"uploaded",inv:false,gegenkonto:"4910",konto:"1220",bu:"401",payer:"",country:"DE",unmatched:false,approvedBy:"",approvedAt:"",comments:[{a:"Dani",d:"17.03.2026",t:"OK, procesando."}]},
   {id:"s3",cid:"sonnenglas",bf:"SG-2026-003",date:"10.03.2026",vendor:"Lufthansa Cargo",amount:512.00,status:"rejected",inv:true,gegenkonto:"4663",konto:"1220",bu:"",payer:"",country:"DE",unmatched:false,approvedBy:"",approvedAt:"",comments:[{a:"Dani",d:"12.03.2026",t:"Falta USt-IdNr. en la factura."}]},
 ];
-
 function KanzleiModule({kClients,setKClients,kPos,setKPos}){
   const[client,setClient]=useState(kClients[0]?.id||"");
   const[subTab,setSubTab]=useState("opos");
@@ -1098,7 +1063,6 @@ function KanzleiModule({kClients,setKClients,kPos,setKPos}){
   const[batchDrag,setBatchDrag]=useState(false);
   const batchRef=useRef();
   const importRef=useRef();
-
   const cli=kClients.find(c=>c.id===client);
   const allPos=kPos.filter(p=>p.cid===client);
   const filtered=(filterStatus==="all"?allPos:filterStatus==="unmatched"?allPos.filter(p=>p.unmatched):allPos.filter(p=>p.status===filterStatus));
@@ -1108,13 +1072,11 @@ function KanzleiModule({kClients,setKClients,kPos,setKPos}){
   const totalAmt=allPos.reduce((s,p)=>s+p.amount,0);
   const pendAmt=allPos.filter(p=>p.status==="pending"||p.status==="uploaded").reduce((s,p)=>s+p.amount,0);
   const isLocked=p=>p?.status==="genehmigt";
-
   const updPos=(id,patch)=>setKPos(prev=>prev.map(p=>p.id===id?{...p,...patch}:p));
   const addComment=()=>{if(!newComment.trim()||!det)return;updPos(det.id,{comments:[...(det.comments||[]),{a:"Dani",d:new Date().toLocaleDateString("de-DE"),t:newComment.trim()}]});setNewComment("");};
   const approve=()=>{if(!det)return;updPos(det.id,{status:"genehmigt",approvedBy:"DFB",approvedAt:new Date().toLocaleString("de-DE")});};
   const unlock=()=>{if(!det)return;updPos(det.id,{status:"pending",approvedBy:"",approvedAt:""});};
   const moveBeleg=(targetCid)=>{if(!det)return;updPos(det.id,{cid:targetCid});setDetail(null);setShowMove(false);};
-
   const exportDATEV=()=>{
     const hdr=["Umsatz","Soll/Haben","WKZ","Kurs","Basis-Umsatz","WKZ","Konto","Gegenkonto","BU-Schlüssel","Belegdatum","Belegfeld 1","Buchungstext","Belegfeld 2"];
     const rows=allPos.filter(p=>p.status==="genehmigt"||p.status==="approved").map(p=>[
@@ -1127,9 +1089,7 @@ function KanzleiModule({kClients,setKClients,kPos,setKPos}){
     const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
     a.download=`DATEV_${cli?.short||"Kanzlei"}_${new Date().toISOString().slice(0,10)}.csv`;a.click();
   };
-
   const importCSV=e=>{const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=ev=>{const lines=ev.target.result.trim().split(/\r?\n/).slice(1);const newPs=lines.map(l=>{const c=l.split(",");const payer=c[6]||"";const gk=c[4]||"4970";return{id:uid(),cid:client,bf:c[0]||"",date:c[1]||"",vendor:c[2]||"",amount:parseFloat(c[3])||0,status:"pending",inv:false,gegenkonto:gk,konto:getKonto(payer),bu:c[5]||"",payer,country:c[7]||"DE",unmatched:false,approvedBy:"",approvedAt:"",comments:[]};});setKPos(prev=>[...prev,...newPs]);};r.readAsText(file);};
-
   // ── BATCH UPLOAD auto-parse ──
   const parseBatchFiles=files=>{
     const parsed=Array.from(files).map(f=>{
@@ -1148,9 +1108,7 @@ function KanzleiModule({kClients,setKClients,kPos,setKPos}){
   const confirmBatch=()=>{setKPos(prev=>[...prev,...batchFiles]);setBatchFiles([]);setSubTab("opos");};
   const updBatch=(id,k,v)=>setBatchFiles(prev=>prev.map(b=>b.id===id?{...b,[k]:v}:b));
   const removeBatch=id=>setBatchFiles(prev=>prev.filter(b=>b.id!==id));
-
   const StatusBadge=({s})=>h("span",{style:{padding:"3px 10px",borderRadius:12,fontSize:11,fontWeight:700,background:K_STATUS[s]?.bg||T.bg,color:K_STATUS[s]?.fg||T.mut,whiteSpace:"nowrap"}},K_STATUS[s]?.l||s);
-
   // ── DETAIL VIEW ──
   if(det){
     const locked=isLocked(det);
@@ -1249,7 +1207,6 @@ function KanzleiModule({kClients,setKClients,kPos,setKPos}){
       )
     );
   }
-
   // ── BATCH REVIEW VIEW ──
   if(subTab==="batch"&&batchFiles.length>0)return h("div",null,
     h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}},
@@ -1286,7 +1243,6 @@ function KanzleiModule({kClients,setKClients,kPos,setKPos}){
       )
     )
   );
-
   // ── MAIN LIST VIEW ──
   return h("div",null,
     h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:20}},
@@ -1404,7 +1360,6 @@ function KanzleiModule({kClients,setKClients,kPos,setKPos}){
     )
   );
 }
-
 function NewClientForm({onSave}){
   const[f,setF]=useState({name:"",short:"",email:""});
   const s=(k,v)=>setF(x=>({...x,[k]:v}));
@@ -1417,7 +1372,6 @@ function NewClientForm({onSave}){
     )
   );
 }
-
 function NewBelegForm({cid,onSave}){
   const[f,setF]=useState({bf:"",date:new Date().toLocaleDateString("de-DE"),vendor:"",amount:"",konto:"1220",gegenkonto:"4970",bu:"",country:"DE",inv:false,payer:""});
   const s=(k,v)=>setF(x=>({...x,[k]:v}));
@@ -1446,7 +1400,6 @@ function NewBelegForm({cid,onSave}){
     )
   );
 }
-
 // ─── MODULE: SHOPPING ───────────────────────────────────────────────────────────
 function ShoppingModule({items,setItems}){
   const[tienda,setTienda]=useState("ALDI");
@@ -1505,12 +1458,10 @@ function ShoppingModule({items,setItems}){
     )
   );
 }
-
 // ─── SUPABASE ─────────────────────────────────────────────────────────────────
 const SUPA_URL="https://rvldlwkujmxwdgqhoafq.supabase.co";
 const SUPA_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2bGRsd2t1am14d2RncWhvYWZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MzMxNDYsImV4cCI6MjA5MDMwOTE0Nn0.9YIUe9Xkd6JyRPrMkTsKFl_W5yuqD2ctbJtoz-ZirAY";
 const supabase=window.supabase.createClient(SUPA_URL,SUPA_KEY);
-
 // ─── LOGIN SCREEN ─────────────────────────────────────────────────────────────
 function LoginScreen(){
   const[loading,setLoading]=useState(false);
@@ -1547,7 +1498,6 @@ function LoginScreen(){
     )
   );
 }
-
 // ─── ROOT APP ──────────────────────────────────────────────────────────────────
 function App(){
   const[session,setSession]=useState(undefined);
@@ -1560,7 +1510,6 @@ function App(){
   const[kClients,setKClients]=useState(()=>store.load("k_clients",K_CLIENTS_DEFAULT));
   const[kPos,setKPos]=useState(()=>store.load("k_pos",K_POSITIONS_DEFAULT));
   const[shopItems,setShopItems]=useState(()=>store.load("shop_items",SHOP_SAMPLE));
-
   useEffect(()=>{
     supabase.auth.getSession().then(({data:{session:s}})=>setSession(s));
     const{data:{subscription}}=supabase.auth.onAuthStateChange((_,s)=>{
@@ -1574,7 +1523,6 @@ function App(){
     });
     return()=>subscription.unsubscribe();
   },[]);
-
   // Also load pisos if session already exists
   useEffect(()=>{
     if(session&&!pisosLoaded){
@@ -1583,18 +1531,14 @@ function App(){
       });
     }
   },[session]);
-
   useEffect(()=>store.save("fin_txns",finTxns),[finTxns]);
   useEffect(()=>store.save("k_clients",kClients),[kClients]);
   useEffect(()=>store.save("k_pos",kPos),[kPos]);
   useEffect(()=>store.save("shop_items",shopItems),[shopItems]);
-
   // Loading
   if(session===undefined)return h("div",{style:{height:"100vh",background:T.bg,display:"flex",alignItems:"center",justifyContent:"center",gap:10,fontSize:14,color:T.mut}},"Cargando...");
-
   // Not logged in
   if(!session)return h(LoginScreen,null);
-
   // Logged in
   const alerts={re:pisos.reduce((s,p)=>s+(p.alertas||[]).filter(a=>a.includes("URGENTE")).length,0),opos:kPos.filter(o=>o.status==="rejected").length};
   return h("div",{style:{display:"flex",height:"100vh",background:T.bg,overflow:"hidden"}},
@@ -1608,7 +1552,6 @@ function App(){
     )
   );
 }
-
 ReactDOM.createRoot(document.getElementById("root")).render(h(App));
 </script>
 </body>
