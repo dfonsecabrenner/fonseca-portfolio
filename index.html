@@ -79,10 +79,10 @@ const PISOS_FALLBACK=[
 async function loadPisosFromDB(){
   try{
     const[propsRes,tenantsRes,empadRes,histRes]=await Promise.all([
-      supabase.from('re_properties').select('*').order('piso_id'),
-      supabase.from('re_tenants').select('*').eq('activo',true),
-      supabase.from('re_empadronados').select('*'),
-      supabase.from('re_tenant_history').select('*'),
+      supa.from('re_properties').select('*').order('piso_id'),
+      supa.from('re_tenants').select('*').eq('activo',true),
+      supa.from('re_empadronados').select('*'),
+      supa.from('re_tenant_history').select('*'),
     ]);
     if(propsRes.error)throw propsRes.error;
     return propsRes.data.map(p=>{
@@ -116,7 +116,7 @@ async function loadPisosFromDB(){
 // Save piso changes back to DB
 async function savePisoToDB(piso){
   if(!piso.dbId)return;
-  await supabase.from('re_properties').update({
+  await supa.from('re_properties').update({
     tipo:piso.tipo, renta:piso.renta, finca:piso.finca, catastral:piso.catastral,
     sup:piso.sup, ibi:piso.ibi, precio:piso.precio, pendiente:piso.pendiente,
     venc_taurus:piso.venc, opcion:piso.opcion, venc_opcion:piso.vencOp,
@@ -124,7 +124,7 @@ async function savePisoToDB(piso){
     updated_at:new Date().toISOString()
   }).eq('id',piso.dbId);
   if(piso.inq?.tenantId){
-    await supabase.from('re_tenants').update({
+    await supa.from('re_tenants').update({
       nombre:piso.inq.n, documento:piso.inq.doc, telefono:piso.inq.tel,
       email:piso.inq.email, inicio:piso.inq.inicio, ultimo_inc:piso.inq.ultimoInc,
       fianza:piso.inq.fianza, ibe:piso.inq.ibe, hid:piso.inq.hid, nota:piso.inq.nota
@@ -1461,14 +1461,14 @@ function ShoppingModule({items,setItems}){
 // ─── SUPABASE ─────────────────────────────────────────────────────────────────
 const SUPA_URL="https://rvldlwkujmxwdgqhoafq.supabase.co";
 const SUPA_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2bGRsd2t1am14d2RncWhvYWZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MzMxNDYsImV4cCI6MjA5MDMwOTE0Nn0.9YIUe9Xkd6JyRPrMkTsKFl_W5yuqD2ctbJtoz-ZirAY";
-const supabase=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+const supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);
 // ─── LOGIN SCREEN ─────────────────────────────────────────────────────────────
 function LoginScreen(){
   const[loading,setLoading]=useState(false);
   const[error,setError]=useState(null);
   const signIn=async()=>{
     setLoading(true);setError(null);
-    const{error:e}=await supabase.auth.signInWithOAuth({
+    const{error:e}=await supa.auth.signInWithOAuth({
       provider:"google",
       options:{redirectTo:window.location.origin}
     });
@@ -1511,8 +1511,8 @@ function App(){
   const[kPos,setKPos]=useState(()=>store.load("k_pos",K_POSITIONS_DEFAULT));
   const[shopItems,setShopItems]=useState(()=>store.load("shop_items",SHOP_SAMPLE));
   useEffect(()=>{
-    supabase.auth.getSession().then(({data:{session:s}})=>setSession(s));
-    const{data:{subscription}}=supabase.auth.onAuthStateChange((_,s)=>{
+    supa.auth.getSession().then(({data:{session:s}})=>setSession(s));
+    const{data:{subscription}}=supa.auth.onAuthStateChange((_,s)=>{
       setSession(s);
       // Load pisos from DB when user logs in
       if(s&&!pisosLoaded){
@@ -1542,7 +1542,7 @@ function App(){
   // Logged in
   const alerts={re:pisos.reduce((s,p)=>s+(p.alertas||[]).filter(a=>a.includes("URGENTE")).length,0),opos:kPos.filter(o=>o.status==="rejected").length};
   return h("div",{style:{display:"flex",height:"100vh",background:T.bg,overflow:"hidden"}},
-    h(Sidebar,{mod,setMod,alerts,user:session.user,onSignOut:()=>supabase.auth.signOut()}),
+    h(Sidebar,{mod,setMod,alerts,user:session.user,onSignOut:()=>supa.auth.signOut()}),
     h("main",{style:{flex:1,overflow:"auto",padding:"22px 26px"}},
       mod==="home"&&h(HomeDashboard,{pisos,rePagos,finTxns,oposItems:kPos,shopItems,setMod}),
       mod==="re"&&h(RealEstateModule,{pisos,setPisos,rePagos,setRePagos,reGastos,setReGastos}),
