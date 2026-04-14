@@ -1509,7 +1509,7 @@ function ShoppingModule({items,setItems}){
 // ─── SUPABASE ─────────────────────────────────────────────────────────────────
 const SUPA_URL="https://rvldlwkujmxwdgqhoafq.supabase.co";
 const SUPA_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2bGRsd2t1am14d2RncWhvYWZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MzMxNDYsImV4cCI6MjA5MDMwOTE0Nn0.9YIUe9Xkd6JyRPrMkTsKFl_W5yuqD2ctbJtoz-ZirAY";
-const supabase=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+supabase=window.supabase.createClient(SUPA_URL,SUPA_KEY);
 
 // ─── LOGIN SCREEN ─────────────────────────────────────────────────────────────
 function LoginScreen(){
