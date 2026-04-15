@@ -1521,7 +1521,7 @@ function LoginScreen(){
 
   const signInGoogle=async()=>{
     setLoading(true);setError(null);
-    const{error:e}=await supa.auth.signInWithOAuth({
+    const{error:e}=await supabase.auth.signInWithOAuth({
       provider:"google",
       options:{redirectTo:window.location.origin}
     });
@@ -1531,7 +1531,7 @@ function LoginScreen(){
   const signInEmail=async()=>{
     if(!email||!pass)return;
     setLoading(true);setError(null);
-    const{error:e}=await supa.auth.signInWithPassword({email,password:pass});
+    const{error:e}=await supabase.auth.signInWithPassword({email,password:pass});
     if(e){setError(e.message);setLoading(false);}
   };
 
