@@ -150,75 +150,18 @@ const RE_RULES=[
 ];
 const autoCatRE=d=>{for(const r of RE_RULES)if(r.re.test(d||""))return{c:r.c,p:r.p};return{c:"",p:""};};
 
-// ─── FINANCE DATA ─────────────────────────────────────────────────────────────
-const FIN_CATS=[
-  {id:"alimentacion",label:"Alimentación",icon:"🛒",color:"#3D6B4F"},
-  {id:"bebe",label:"Bebé",icon:"👶",color:"#B85C2C"},
-  {id:"restaurantes",label:"Restaurantes",icon:"🍽️",color:"#7A5C1E"},
-  {id:"movilidad",label:"Movilidad / Gasolina",icon:"🚗",color:"#1B3A8A"},
-  {id:"salud",label:"Salud / Farmacia",icon:"💊",color:"#8B2E2E"},
-  {id:"ropa",label:"Ropa / Hogar",icon:"👕",color:"#4A3728"},
-  {id:"educacion",label:"Educación",icon:"🎓",color:"#2D5A8E"},
-  {id:"ocio",label:"Ocio / Entretenimiento",icon:"🎮",color:"#6B3D8A"},
-  {id:"viajes",label:"Viajes",icon:"✈️",color:"#1B6B8A"},
-  {id:"tecnologia",label:"Tecnología",icon:"📱",color:"#2E4A6B"},
-  {id:"limpieza",label:"Limpieza / Hogar",icon:"🧺",color:"#5A6B3D"},
-  {id:"deporte",label:"Deporte",icon:"🏋️",color:"#3D6B5A"},
-  {id:"supermercado",label:"Supermercado (general)",icon:"🏪",color:"#6B5A3D"},
-  {id:"transferencia",label:"Transferencias",icon:"💳",color:"#8A8A8A"},
-  {id:"otros",label:"Otros",icon:"📦",color:"#6B6B6B"},
-];
-const PERSONAS=["Daniela","JP","Familia"];
-const FIN_SAMPLE=[
-  {id:"f1",fecha:"2026-03-15",desc:"ALDI VAALS — Wocheneinkauf",monto:-89.43,cat:"alimentacion",persona:"Familia",tienda:"ALDI"},
-  {id:"f2",fecha:"2026-03-14",desc:"TANKSTELLE AACHEN A3",monto:-68.20,cat:"movilidad",persona:"JP",tienda:null},
-  {id:"f3",fecha:"2026-03-13",desc:"ALDI — Pampers + Wipes",monto:-34.99,cat:"bebe",persona:"Daniela",tienda:"ALDI"},
-  {id:"f4",fecha:"2026-03-12",desc:"ROSSMANN DROGERIE",monto:-22.80,cat:"limpieza",persona:"Daniela",tienda:null},
-  {id:"f5",fecha:"2026-03-11",desc:"RESTAURANT MAASTRICHT",monto:-67.50,cat:"restaurantes",persona:"Familia",tienda:null},
-  {id:"f6",fecha:"2026-03-10",desc:"HIT SUPERMARKT",monto:-112.34,cat:"alimentacion",persona:"Familia",tienda:"HIT"},
-  {id:"f7",fecha:"2026-03-08",desc:"AMAZON.DE BESTELLUNG",monto:-45.99,cat:"tecnologia",persona:"Daniela",tienda:null},
-  {id:"f8",fecha:"2026-03-07",desc:"ALDI — Kleidung Kinder",monto:-28.50,cat:"ropa",persona:"Daniela",tienda:"ALDI"},
-  {id:"f9",fecha:"2026-03-05",desc:"APOTHEKE VAALS",monto:-19.90,cat:"salud",persona:"Familia",tienda:null},
-  {id:"f10",fecha:"2026-03-03",desc:"LIDL WOCHENEINKAUF",monto:-76.22,cat:"alimentacion",persona:"Familia",tienda:"Lidl"},
-  {id:"f11",fecha:"2026-03-01",desc:"ZALANDO.DE",monto:-89.95,cat:"ropa",persona:"Daniela",tienda:null},
-  {id:"f12",fecha:"2026-02-28",desc:"ALDI — Groceries",monto:-95.60,cat:"alimentacion",persona:"Familia",tienda:"ALDI"},
-  {id:"f13",fecha:"2026-02-25",desc:"DECATHLON AACHEN",monto:-55.00,cat:"deporte",persona:"JP",tienda:null},
-  {id:"f14",fecha:"2026-02-20",desc:"NETFLIX",monto:-17.99,cat:"ocio",persona:"Familia",tienda:null},
-  {id:"f15",fecha:"2026-02-15",desc:"DM DROGERIE",monto:-38.40,cat:"limpieza",persona:"Daniela",tienda:null},
-];
+// ─── FINANCE DATA (removed — Lupa is the product) ────────────────────────────
 
 // ─── OPOS DATA ─────────────────────────────────────────────────────────────────
 
-// ─── SHOPPING DATA ─────────────────────────────────────────────────────────────
-const TIENDAS=["ALDI","HIT","Fresno","Bebidas"];
-const ALDI_CATS=["Frutas y verduras","Proteínas","Carbohidratos","Especias","Dulces","Bebidas","Aldi specials","Limpieza","Bebés","Refrigerados","Café y té","Congelados"];
-const SHOP_SAMPLE=[
-  {id:"s1",tienda:"ALDI",cat:"Frutas y verduras",item:"Manzanas",done:false},
-  {id:"s2",tienda:"ALDI",cat:"Frutas y verduras",item:"Plátanos",done:false},
-  {id:"s3",tienda:"ALDI",cat:"Frutas y verduras",item:"Tomates",done:true},
-  {id:"s4",tienda:"ALDI",cat:"Proteínas",item:"Pechuga de pollo",done:false},
-  {id:"s5",tienda:"ALDI",cat:"Proteínas",item:"Huevos x12",done:false},
-  {id:"s6",tienda:"ALDI",cat:"Carbohidratos",item:"Pasta",done:false},
-  {id:"s7",tienda:"ALDI",cat:"Carbohidratos",item:"Pan integral",done:true},
-  {id:"s8",tienda:"ALDI",cat:"Bebidas",item:"Agua sin gas 6x",done:false},
-  {id:"s9",tienda:"ALDI",cat:"Bebés",item:"Pampers T4",done:false},
-  {id:"s10",tienda:"ALDI",cat:"Bebés",item:"Leche de fórmula",done:false},
-  {id:"s11",tienda:"ALDI",cat:"Refrigerados",item:"Yogurt natural",done:false},
-  {id:"s12",tienda:"ALDI",cat:"Café y té",item:"Café molido",done:false},
-  {id:"s13",tienda:"ALDI",cat:"Limpieza",item:"Detergente ropa",done:false},
-  {id:"s14",tienda:"HIT",item:"Queso gouda",cat:"General",done:false},
-  {id:"s15",tienda:"HIT",item:"Jamón serrano",cat:"General",done:false},
-  {id:"s16",tienda:"Bebidas",item:"Zumo naranja x6",cat:"General",done:false},
-  {id:"s17",tienda:"Bebidas",item:"Agua con gas",cat:"General",done:false},
-];
+// ─── SHOPPING DATA (removed — MISE is the product) ───────────────────────────
 
 // ─── SIDEBAR ───────────────────────────────────────────────────────────────────
 const MODULES=[
   {id:"home",icon:"⊞",label:"Dashboard"},
-  {id:"re",icon:"🏠",label:"Real Estate",badge:4},
-  {id:"finance",icon:"💳",label:"Finance"},
+  {id:"re",icon:"🏠",label:"Real Estate (Alcoy)"},
+  {id:"portfolio",icon:"🏘️",label:"Portafolio"},
   {id:"opos",icon:"⚖️",label:"Fonseca Kanzlei"},
-  {id:"shopping",icon:"🛒",label:"Shopping"},
 ];
 
 function Sidebar({mod,setMod,alerts,user,onSignOut}){
@@ -226,7 +169,7 @@ function Sidebar({mod,setMod,alerts,user,onSignOut}){
     h("div",{style:{padding:"22px 16px 16px",borderBottom:`1px solid ${T.sDiv}`}},
       h("div",{className:"serif",style:{fontSize:19,fontWeight:700,color:"#FFF",lineHeight:1.15}},"Fonseca"),
       h("div",{className:"serif",style:{fontSize:19,fontStyle:"italic",color:T.sAct,lineHeight:1.15}},"Portfolio"),
-      h("div",{style:{fontSize:10,color:T.sTxt,marginTop:6,letterSpacing:.4}},"Family · Real Estate · Finance")
+      h("div",{style:{fontSize:10,color:T.sTxt,marginTop:6,letterSpacing:.4}},"Family · Real Estate · Kanzlei")
     ),
     h("nav",{style:{padding:"10px 8px",flex:1}},
       MODULES.map(m=>h("button",{key:m.id,onClick:()=>setMod(m.id),
@@ -258,14 +201,107 @@ function Sidebar({mod,setMod,alerts,user,onSignOut}){
 }
 
 // ─── MODULE: HOME DASHBOARD ─────────────────────────────────────────────────────
-function HomeDashboard({pisos,rePagos,finTxns,oposItems,shopItems,setMod}){
+// Widget: Finance summary from Lupa DB
+function WidgetLupa(){
+  const[data,setData]=useState(null);
+  const[loading,setLoading]=useState(true);
+  useEffect(()=>{
+    const now=new Date();
+    const mesKey=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`;
+    supabase.from("transactions")
+      .select("amount,type,category_id")
+      .gte("date",mesKey+"-01")
+      .lte("date",mesKey+"-31")
+      .eq("type","expense")
+      .then(({data:txns,error})=>{
+        setLoading(false);
+        if(error||!txns||txns.length===0){setData(null);return;}
+        const total=txns.reduce((s,t)=>s+Math.abs(+t.amount),0);
+        // top 3 categories by amount
+        const byCat={};
+        txns.forEach(t=>{const k=t.category_id||"otros";byCat[k]=(byCat[k]||0)+Math.abs(+t.amount);});
+        const top3=Object.entries(byCat).sort((a,b)=>b[1]-a[1]).slice(0,3);
+        setData({total,top3,count:txns.length});
+      });
+  },[]);
+  const CAT_ICONS={"alimentacion":"🛒","bebe":"👶","restaurantes":"🍽️","movilidad":"🚗","salud":"💊","ropa":"👕","ocio":"🎮","viajes":"✈️","tecnologia":"📱","limpieza":"🧺","deporte":"🏋️","otros":"📦"};
+  return h(Card,null,
+    h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}},
+      h("div",{style:{fontSize:13,fontWeight:700,color:T.txt}},"💳 Lupa — Gastos este mes"),
+      h("a",{href:"https://lupa-five.vercel.app",target:"_blank",
+        style:{fontSize:12,color:T.acc,textDecoration:"none",fontWeight:600}},"Ver en Lupa →")
+    ),
+    loading?h("div",{style:{fontSize:13,color:T.mut,padding:"12px 0"}},"Cargando..."):
+    !data?h("div",{style:{padding:"16px 0",textAlign:"center"}},
+      h("div",{style:{fontSize:13,color:T.mut,marginBottom:8}},"Sin datos de Lupa todavía"),
+      h("a",{href:"https://lupa-five.vercel.app",target:"_blank",
+        style:{fontSize:12,color:T.acc,fontWeight:600,textDecoration:"none"}},"Conecta Lupa para ver tus finanzas")
+    ):
+    h("div",null,
+      h("div",{className:"num",style:{fontSize:22,fontWeight:800,color:T.err,marginBottom:12}},e$(data.total)),
+      h("div",{style:{fontSize:11,fontWeight:700,color:T.mut,textTransform:"uppercase",letterSpacing:.6,marginBottom:8}},"Top categorías"),
+      data.top3.map(([cat,total],i)=>h("div",{key:i,style:{display:"flex",justifyContent:"space-between",padding:"5px 0",borderBottom:`1px solid ${T.brd}`,fontSize:13}},
+        h("span",null,(CAT_ICONS[cat]||"📦")+" "+cat),
+        h("span",{className:"num",style:{fontWeight:600,color:T.err}},e$(total))
+      ))
+    )
+  );
+}
+
+// Widget: MISE inventory expiring soon
+function WidgetMISE(){
+  const[data,setData]=useState(null);
+  const[loading,setLoading]=useState(true);
+  useEffect(()=>{
+    const today=new Date();
+    const in7=new Date(today);in7.setDate(today.getDate()+7);
+    const fmt=d=>d.toISOString().split("T")[0];
+    supabase.from("mise_inventory")
+      .select("name,expiry_date,quantity,unit")
+      .not("expiry_date","is",null)
+      .lte("expiry_date",fmt(in7))
+      .gte("expiry_date",fmt(today))
+      .order("expiry_date")
+      .then(({data:items,error})=>{
+        setLoading(false);
+        if(error){setData(null);return;}
+        setData(items||[]);
+      });
+  },[]);
+  const daysLeft=d=>{const diff=Math.ceil((new Date(d)-new Date())/(1000*60*60*24));return diff<=0?"hoy":diff===1?"mañana":diff+" días";};
+  return h(Card,null,
+    h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}},
+      h("div",{style:{fontSize:13,fontWeight:700,color:T.txt}},"🍽️ MISE — Cocina"),
+      h("a",{href:"https://mise-app-iota-five.vercel.app",target:"_blank",
+        style:{fontSize:12,color:T.acc,textDecoration:"none",fontWeight:600}},"Ver en MISE →")
+    ),
+    loading?h("div",{style:{fontSize:13,color:T.mut,padding:"12px 0"}},"Cargando..."):
+    !data?h("div",{style:{padding:"16px 0",textAlign:"center"}},
+      h("a",{href:"https://mise-app-iota-five.vercel.app",target:"_blank",
+        style:{fontSize:12,color:T.acc,fontWeight:600,textDecoration:"none"}},"Ver en MISE →")
+    ):
+    data.length===0?h("div",{style:{padding:"12px 0",textAlign:"center"}},
+      h("div",{style:{fontSize:22,marginBottom:6}},"✅"),
+      h("div",{style:{fontSize:13,color:T.ok,fontWeight:600}}),"Todo en orden en tu cocina"
+    ):
+    h("div",null,
+      h("div",{style:{fontSize:13,color:T.wrn,fontWeight:600,marginBottom:10}},
+        "⚠️ "+data.length+" item"+(data.length>1?"s":"")+" por vencer esta semana"
+      ),
+      data.slice(0,4).map((item,i)=>h("div",{key:i,style:{display:"flex",justifyContent:"space-between",padding:"5px 0",borderBottom:`1px solid ${T.brd}`,fontSize:13}},
+        h("span",{style:{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"60%"}},item.name),
+        h("span",{style:{color:T.wrn,fontWeight:600,flexShrink:0}},daysLeft(item.expiry_date))
+      )),
+      data.length>4&&h("div",{style:{fontSize:12,color:T.mut,marginTop:6}},"+ "+(data.length-4)+" más")
+    )
+  );
+}
+
+function HomeDashboard({pisos,rePagos,setMod}){
   const now=new Date();
   const mesKey=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`;
   const rentaEsp=pisos.reduce((s,p)=>s+p.renta,0);
   const cobrado=rePagos.filter(p=>p.key===mesKey).reduce((s,p)=>s+p.monto,0);
-  const gastoMes=finTxns.filter(t=>t.fecha.startsWith(mesKey)&&t.monto<0).reduce((s,t)=>s+Math.abs(t.monto),0);
-  const oposPend=oposItems.filter(o=>o.status==="pendiente"||o.status==="vencido").length;
-  const shopPend=shopItems.filter(s=>!s.done).length;
   const portfolioVal=pisos.filter(p=>p.precio).reduce((s,p)=>s+(p.precio||0),0);
 
   return h("div",null,
@@ -275,14 +311,12 @@ function HomeDashboard({pisos,rePagos,finTxns,oposItems,shopItems,setMod}){
       h("p",{style:{margin:"5px 0 0",color:T.mut,fontSize:13}},now.toLocaleDateString("es-ES",{weekday:"long",year:"numeric",month:"long",day:"numeric"}))
     ),
     // KPI row
-    h("div",{style:{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:11,marginBottom:20}},
+    h("div",{style:{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:11,marginBottom:20}},
       [
         {label:"Portfolio value",val:e$(portfolioVal),color:T.ok,mod:"re"},
         {label:"Renta cobrada este mes",val:e$(cobrado),color:cobrado>=rentaEsp?T.ok:T.wrn,mod:"re"},
-        {label:"Gasto personal mes",val:e$(gastoMes),color:T.err,mod:"finance"},
-        {label:"OPOS pendiente",val:oposPend+" items",color:oposPend>0?T.err:T.ok,mod:"opos"},
-        {label:"Lista de compras",val:shopPend+" items",color:T.txt,mod:"shopping"},
-      ].map((k,i)=>h(Card,{key:i,style:{padding:16,cursor:"pointer",transition:"box-shadow .15s"},onClick:()=>setMod(k.mod)},
+        {label:"Renta esperada",val:e$(rentaEsp),color:T.txt,mod:"re"},
+      ].map((k,i)=>h(Card,{key:i,style:{padding:16,cursor:"pointer"},onClick:()=>setMod(k.mod)},
         h(KPI,{big:true,label:k.label,val:k.val,color:k.color})
       ))
     ),
@@ -308,43 +342,10 @@ function HomeDashboard({pisos,rePagos,finTxns,oposItems,shopItems,setMod}){
           })
         )
       ),
-      // Finance + Shopping
+      // Right column: Lupa + MISE widgets
       h("div",{style:{display:"flex",flexDirection:"column",gap:14}},
-        // Finance top categories
-        h(Card,null,
-          h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}},
-            h("div",{style:{fontSize:13,fontWeight:700,color:T.txt}},"💳 Finance — Top gastos mes"),
-            h(Btn,{v:"g",sm:true,onClick:()=>setMod("finance")},"Ver todo →")
-          ),
-          h("div",null,
-            Object.entries(finTxns.filter(t=>t.monto<0&&t.fecha.startsWith(mesKey)).reduce((acc,t)=>{acc[t.cat]=(acc[t.cat]||0)+Math.abs(t.monto);return acc;},{}))
-              .sort((a,b)=>b[1]-a[1]).slice(0,4)
-              .map(([cat,total])=>{
-                const c=FIN_CATS.find(x=>x.id===cat);
-                return h("div",{key:cat,style:{display:"flex",justifyContent:"space-between",padding:"5px 0",borderBottom:`1px solid ${T.brd}`,fontSize:13}},
-                  h("span",null,(c?.icon||"•")+" "+(c?.label||cat)),
-                  h("span",{className:"num",style:{fontWeight:600,color:T.err}},e$(total))
-                );
-              })
-          )
-        ),
-        // Shopping quick
-        h(Card,null,
-          h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}},
-            h("div",{style:{fontSize:13,fontWeight:700,color:T.txt}},"🛒 Shopping — ALDI"),
-            h(Btn,{v:"g",sm:true,onClick:()=>setMod("shopping")},"Ver todo →")
-          ),
-          h("div",{style:{display:"flex",flexDirection:"column",gap:4}},
-            shopItems.filter(s=>s.tienda==="ALDI"&&!s.done).slice(0,5).map(s=>
-              h("div",{key:s.id,style:{fontSize:13,color:T.mut,display:"flex",alignItems:"center",gap:7,padding:"3px 0"}},
-                h("span",{style:{width:14,height:14,border:`1.5px solid ${T.brd}`,borderRadius:3,display:"inline-block"}}),
-                s.item
-              )
-            ),
-            shopItems.filter(s=>s.tienda==="ALDI"&&!s.done).length>5&&
-              h("div",{style:{fontSize:12,color:T.mut,marginTop:4}},`+ ${shopItems.filter(s=>s.tienda==="ALDI"&&!s.done).length-5} más`)
-          )
-        )
+        h(WidgetLupa,null),
+        h(WidgetMISE,null)
       )
     )
   );
@@ -911,132 +912,209 @@ function REGastoForm({onClose,onSave,pisos:pisosP}){
   );
 }
 
-// ─── MODULE: FINANCE (LUPA) ─────────────────────────────────────────────────────
-function FinanceModule({txns,setTxns}){
-  const[view,setView]=useState("txns");
-  const[filtCat,setFiltCat]=useState("");
-  const[filtPers,setFiltPers]=useState("");
-  const now=new Date();
-  const[mes,setMes]=useState(now.getMonth());
-  const[año,setAño]=useState(now.getFullYear());
-  const mesKey=`${año}-${String(mes+1).padStart(2,"0")}`;
-  const mesData=txns.filter(t=>t.fecha.startsWith(mesKey));
-  const gastos=mesData.filter(t=>t.monto<0);
-  const totalGasto=gastos.reduce((s,t)=>s+Math.abs(t.monto),0);
-  const byCat=FIN_CATS.map(c=>({...c,total:gastos.filter(t=>t.cat===c.id).reduce((s,t)=>s+Math.abs(t.monto),0)})).filter(c=>c.total>0).sort((a,b)=>b.total-a.total);
-  const byPers=PERSONAS.map(p=>({p,total:gastos.filter(t=>t.persona===p).reduce((s,t)=>s+Math.abs(t.monto),0)}));
-  const filtered=txns.filter(t=>(filtCat?t.cat===filtCat:true)&&(filtPers?t.persona===filtPers:true)).sort((a,b)=>b.fecha.localeCompare(a.fecha));
-  const maxCat=Math.max(...byCat.map(c=>c.total),1);
-  const subNav=[{id:"txns",l:"Transacciones"},{id:"summary",l:"Resumen mes"},{id:"cats",l:"Categorías"},{id:"persons",l:"Por persona"}];
-  return h("div",null,
-    h("div",{style:{display:"flex",gap:3,marginBottom:20,background:"#EDE5D8",padding:4,borderRadius:10,flexWrap:"wrap"}},
-      subNav.map(t=>h("button",{key:t.id,onClick:()=>setView(t.id),style:{padding:"6px 14px",borderRadius:7,border:"none",cursor:"pointer",background:view===t.id?T.card:"transparent",color:view===t.id?T.txt:T.mut,fontSize:12,fontWeight:view===t.id?600:400,boxShadow:view===t.id?"0 1px 4px rgba(0,0,0,.08)":"none"}},t.l))
-    ),
-    // Mes nav (shared across all sub-views)
-    h("div",{style:{display:"flex",alignItems:"center",gap:12,marginBottom:18}},
-      h("button",{onClick:()=>mes===0?(setMes(11),setAño(a=>a-1)):setMes(m=>m-1),style:{border:`1px solid ${T.brd}`,background:T.card,width:30,height:30,borderRadius:8,color:T.mut,fontSize:14,display:"flex",alignItems:"center",justifyContent:"center"}},"‹"),
-      h("span",{className:"serif",style:{fontSize:16,fontWeight:700,color:T.txt,minWidth:140,textAlign:"center"}},MES[mes]+" "+año),
-      h("button",{onClick:()=>mes===11?(setMes(0),setAño(a=>a+1)):setMes(m=>m+1),style:{border:`1px solid ${T.brd}`,background:T.card,width:30,height:30,borderRadius:8,color:T.mut,fontSize:14,display:"flex",alignItems:"center",justifyContent:"center"}},"›"),
-      h("div",{style:{marginLeft:"auto",display:"flex",gap:8}},
-        h(KPI,{label:"Total gasto mes",val:e$(totalGasto),color:T.err}),
-        h(KPI,{label:"Transacciones",val:mesData.length})
-      )
-    ),
-    // TRANSACTIONS VIEW
-    view==="txns"&&h("div",null,
-      h("div",{style:{display:"flex",gap:8,marginBottom:14,alignItems:"center"}},
-        h("select",{value:filtCat,onChange:e=>setFiltCat(e.target.value),style:{padding:"7px 11px",border:`1px solid ${T.brd}`,borderRadius:8,fontSize:13,background:T.card,color:T.txt}},
-          h("option",{value:""},"Todas las categorías"),FIN_CATS.map(c=>h("option",{key:c.id,value:c.id},c.icon+" "+c.label))
-        ),
-        h("select",{value:filtPers,onChange:e=>setFiltPers(e.target.value),style:{padding:"7px 11px",border:`1px solid ${T.brd}`,borderRadius:8,fontSize:13,background:T.card,color:T.txt}},
-          h("option",{value:""},"Todas las personas"),PERSONAS.map(p=>h("option",{key:p,value:p},p))
-        ),
-        h("span",{style:{fontSize:12,color:T.mut,marginLeft:8}},filtered.length+" transacciones")
+
+
+// ─── MODULE: PORTAFOLIO INMUEBLES ────────────────────────────────────────────
+const COUNTRY_FLAG={"DE":"🇩🇪","NL":"🇳🇱","ES":"🇪🇸","MX":"🇲🇽"};
+const COUNTRY_COLOR={"DE":"#DCEAC9","NL":"#FCEFCF","ES":"#F3D9CF","MX":"#D9E5F3"};
+const COUNTRY_TXT={"DE":"#49652E","NL":"#8a6314","ES":"#9b452f","MX":"#33567f"};
+
+function PortafolioModule(){
+  const[props,setProps]=useState([]);
+  const[loans,setLoans]=useState([]);
+  const[tenants,setTenants]=useState([]);
+  const[sel,setSel]=useState(null);
+  const[loading,setLoading]=useState(true);
+
+  useEffect(()=>{
+    Promise.all([
+      supabase.from('re_portfolio').select('*').eq('active',true).order('country'),
+      supabase.from('re_portfolio_loans').select('*'),
+      supabase.from('re_portfolio_tenants').select('*'),
+    ]).then(([p,l,t])=>{
+      setProps(p.data||[]);
+      setLoans(l.data||[]);
+      setTenants(t.data||[]);
+      setLoading(false);
+    });
+  },[]);
+
+  const loansOf=pid=>loans.filter(l=>l.property_id===pid);
+  const tenantsOf=pid=>tenants.filter(t=>t.property_id===pid);
+  const totalRate=pid=>loansOf(pid).reduce((s,l)=>s+(+l.rate_monthly||0),0);
+  const totalSaldo=pid=>loansOf(pid).reduce((s,l)=>s+(+l.saldo||0),0);
+  const rentaActual=pid=>{
+    const ts=tenantsOf(pid).filter(t=>t.activo);
+    return ts.reduce((s,t)=>s+(+t.renta||0),0);
+  };
+  const resultado=pid=>{
+    const r=rentaActual(pid);
+    const c=totalRate(pid);
+    if(!r||!c)return null;
+    return r-c;
+  };
+  const e$=(v,cur='EUR')=>cur==='MXN'?`$ ${v?.toLocaleString('es-MX',{minimumFractionDigits:0})} MXN`:`${v?.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})} €`;
+  const fmt$=(v,cur='EUR',pos=false)=>{
+    if(v===null||v===undefined)return null;
+    const s=e$(Math.abs(v),cur);
+    return h("span",{style:{color:v>=0?T.ok:T.err,fontWeight:700}},(v>=0?'+ ':'− ')+s);
+  };
+
+  if(loading)return h("div",{style:{padding:40,textAlign:'center',color:T.mut}},"Cargando portafolio...");
+
+  // DETAIL VIEW
+  if(sel){
+    const p=props.find(x=>x.id===sel);
+    if(!p)return null;
+    const ls=loansOf(p.id);
+    const ts=tenantsOf(p.id);
+    const tAct=ts.filter(t=>t.activo);
+    const tHist=ts.filter(t=>!t.activo);
+    const res=resultado(p.id);
+    return h("div",null,
+      // Back + header
+      h("div",{style:{display:"flex",alignItems:"center",gap:12,marginBottom:20}},
+        h("button",{onClick:()=>setSel(null),style:{border:"none",background:T.card,borderRadius:8,padding:"6px 12px",cursor:"pointer",fontSize:13,color:T.acc,fontWeight:600}},"← Portafolio"),
+        h("div",{style:{fontSize:11,padding:"2px 10px",borderRadius:99,background:COUNTRY_COLOR[p.country],color:COUNTRY_TXT[p.country],fontWeight:700}},COUNTRY_FLAG[p.country]+" "+p.country)
       ),
-      h(Card,{style:{padding:0,overflow:"hidden"}},
-        h("table",{style:{width:"100%",borderCollapse:"collapse"}},
-          h("thead",null,h("tr",{style:{background:T.bg}},["Fecha","Descripción","Categoría","Persona","Importe"].map((hd,i)=>h("th",{key:i,style:{padding:"9px 14px",textAlign:i===4?"right":"left",fontSize:11,fontWeight:700,color:T.mut,textTransform:"uppercase",letterSpacing:.6,borderBottom:`1px solid ${T.brd}`}},hd)))),
-          h("tbody",null,filtered.slice(0,40).map((t,i)=>{
-            const c=FIN_CATS.find(x=>x.id===t.cat);
-            return h("tr",{key:t.id,style:{borderBottom:`1px solid ${T.brd}`,background:i%2===0?T.card:"#FAF7F2"}},
-              h("td",{className:"num",style:{padding:"9px 14px",fontSize:12,color:T.mut,whiteSpace:"nowrap"}},t.fecha),
-              h("td",{style:{padding:"9px 14px",fontSize:13,maxWidth:220,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},t.desc),
-              h("td",{style:{padding:"9px 14px"}},c?h("span",{style:{fontSize:12,display:"inline-flex",alignItems:"center",gap:4}},h("span",null,c.icon),h("span",{style:{color:T.mut}},c.label)):h(Tag,{tx:"Sin cat",c:"w"})),
-              h("td",{style:{padding:"9px 14px"}},h(Tag,{tx:t.persona,c:t.persona==="Daniela"?"a":t.persona==="JP"?"b":"o"})),
-              h("td",{className:"num",style:{padding:"9px 14px",fontWeight:700,fontSize:13,textAlign:"right",color:t.monto>=0?T.ok:T.err}},(t.monto>=0?"+":"")+e$(t.monto))
-            );
-          }))
-        )
-      )
-    ),
-    // SUMMARY VIEW
-    view==="summary"&&h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}},
-      h(Card,null,
-        h("div",{style:{fontSize:11,fontWeight:700,color:T.mut,textTransform:"uppercase",letterSpacing:.7,marginBottom:14}},"Por categoría"),
-        byCat.map(c=>h("div",{key:c.id,style:{marginBottom:10}},
-          h("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:4,fontSize:13}},
-            h("span",null,c.icon+" "+c.label),
-            h("span",{className:"num",style:{fontWeight:700,color:T.err}},e$(c.total))
-          ),
-          h("div",{style:{height:5,background:T.brd,borderRadius:3}},
-            h("div",{style:{height:"100%",background:c.color||T.acc,borderRadius:3,width:`${(c.total/maxCat)*100}%`}})
-          )
+      h("h2",{className:"serif",style:{fontSize:26,fontWeight:800,color:T.txt,marginBottom:4}},p.name),
+      h("div",{style:{fontSize:13,color:T.mut,marginBottom:20}},p.address),
+      // KPIs
+      h("div",{style:{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:20}},
+        [
+          {k:"Kaufpreis",v:p.kaufpreis?e$(+p.kaufpreis,p.kaufpreis_cur):"—"},
+          {k:"Saldo crédito",v:e$(totalSaldo(p.id))},
+          {k:"Cuota/mes",v:e$(totalRate(p.id))},
+          {k:"Resultado/mes",v:res!==null?null:"—",res},
+        ].map((k,i)=>h(Card,{key:i,style:{padding:14}},
+          h("div",{style:{fontSize:10,textTransform:"uppercase",letterSpacing:.7,color:T.mut,fontWeight:700,marginBottom:5}},k.k),
+          k.res!==undefined&&k.res!==null?fmt$(k.res):
+          h("div",{className:"num",style:{fontSize:18,fontWeight:800,color:T.txt}},k.v)
         ))
       ),
-      h(Card,null,
-        h("div",{style:{fontSize:11,fontWeight:700,color:T.mut,textTransform:"uppercase",letterSpacing:.7,marginBottom:14}},"Por persona"),
-        byPers.map(({p,total})=>h("div",{key:p,style:{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 0",borderBottom:`1px solid ${T.brd}`}},
-          h("div",null,
-            h("div",{style:{fontWeight:700,fontSize:14}},p),
-            h("div",{style:{fontSize:11,color:T.mut,marginTop:2}},`${((total/totalGasto||0)*100).toFixed(1)}% del total`)
-          ),
-          h("div",{className:"num",style:{fontSize:18,fontWeight:700,color:T.err}},e$(total))
-        )),
-        h("div",{style:{display:"flex",justifyContent:"space-between",padding:"12px 0",marginTop:4,borderTop:`2px solid ${T.brd}`}},
-          h("span",{style:{fontWeight:700}},h("span",{className:"serif"},"Total")),
-          h("span",{className:"num",style:{fontWeight:800,fontSize:18,color:T.err}},e$(totalGasto))
-        )
-      )
-    ),
-    // CATEGORIES VIEW
-    view==="cats"&&h("div",null,
-      h("div",{style:{fontSize:11,fontWeight:700,color:T.mut,textTransform:"uppercase",letterSpacing:.7,marginBottom:12}},"Inteligencia contextual — misma tienda, categoría diferente"),
-      h(Card,{style:{padding:14,background:T.aLt,border:`1px solid #F0C89A`,marginBottom:16}},
-        h("div",{style:{fontSize:12,fontWeight:700,color:T.acc,marginBottom:8}},"⚡ Ejemplo: ALDI"),
-        h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,fontSize:12}},
-          [["Pampers, leche fórmula","👶 Bebé"],["Manzanas, carne, pasta","🛒 Alimentación"],["Camiseta, pantalón","👕 Ropa / Hogar"]].map(([ej,cat],i)=>
-            h("div",{key:i,style:{background:T.card,borderRadius:8,padding:10}},
-              h("div",{style:{color:T.mut,marginBottom:4}},ej),
-              h("div",{style:{fontWeight:700,color:T.acc}},cat)
+      // Financing table
+      ls.length>0&&h(Card,{style:{marginBottom:16}},
+        h("div",{style:{fontSize:12,fontWeight:700,color:T.mut,textTransform:"uppercase",letterSpacing:.6,marginBottom:12}},"Financiación"),
+        h("table",{style:{width:"100%",borderCollapse:"collapse",fontSize:13}},
+          h("thead",null,h("tr",null,
+            ["Banco","Saldo","Ursprung","Zins","Rate/mes","Zinsbindung"].map(c=>
+              h("th",{key:c,style:{textAlign:c==="Banco"?"left":"right",padding:"6px 10px",fontSize:11,background:T.tHd,color:T.hd,fontWeight:700,textTransform:"uppercase",letterSpacing:.5}},c)
+            )
+          )),
+          h("tbody",null,
+            ls.map((l,i)=>h("tr",{key:i,style:{background:i%2===0?T.bg:T.card}},
+              h("td",{style:{padding:"7px 10px"}},"🏦 "+l.bank),
+              h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right"}},"€ "+Number(l.saldo).toLocaleString("de-DE",{minimumFractionDigits:2})),
+              h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right"}},"€ "+Number(l.ursprung).toLocaleString("de-DE",{minimumFractionDigits:0})),
+              h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right"}},l.zins_pct+"%"),
+              h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right",fontWeight:600}},"€ "+Number(l.rate_monthly).toLocaleString("de-DE",{minimumFractionDigits:2})),
+              h("td",{style:{padding:"7px 10px",textAlign:"right",color:T.mut,fontSize:12}},l.zinsbindung||"—")
+            )),
+            h("tr",{style:{background:T.tHd}},
+              h("td",{style:{padding:"7px 10px",fontWeight:800}},"Total"),
+              h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right",fontWeight:800}},"€ "+totalSaldo(p.id).toLocaleString("de-DE",{minimumFractionDigits:2})),
+              h("td",null),h("td",null),
+              h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right",fontWeight:800}},"€ "+totalRate(p.id).toLocaleString("de-DE",{minimumFractionDigits:2})),
+              h("td",null)
             )
           )
         )
       ),
-      h("div",{style:{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10}},
-        FIN_CATS.map(c=>h(Card,{key:c.id,style:{padding:14,display:"flex",alignItems:"center",gap:10}},
-          h("span",{style:{fontSize:22}},c.icon),
-          h("div",null,
-            h("div",{style:{fontSize:13,fontWeight:600}},c.label),
-            h("div",{className:"num",style:{fontSize:12,color:T.mut}},e$(mesData.filter(t=>t.cat===c.id&&t.monto<0).reduce((s,t)=>s+Math.abs(t.monto),0))+" este mes")
-          )
+      // Tenants
+      tAct.length>0&&h(Card,{style:{marginBottom:16}},
+        h("div",{style:{fontSize:12,fontWeight:700,color:T.mut,textTransform:"uppercase",letterSpacing:.6,marginBottom:12}},"Inquilinos actuales"),
+        tAct.map((t,i)=>h("div",{key:i,style:{background:T.bg,border:`1px solid ${T.brd}`,borderLeft:`4px solid ${T.ok}`,borderRadius:10,padding:"12px 14px",marginBottom:8}},
+          h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}},
+            h("span",{style:{fontWeight:700,fontSize:14,color:T.txt}},t.name+(t.zimmer_label?" · "+t.zimmer_label:"")),
+            h("span",{style:{fontSize:11,background:T.tHd,color:T.hd,padding:"2px 8px",borderRadius:99,fontWeight:700}},"Actual")
+          ),
+          h("div",{style:{display:"flex",gap:16,fontSize:12,color:T.mut}},
+            t.renta&&h("span",null,"Renta: ",h("b",{style:{color:T.txt}},e$(+t.renta,t.renta_cur||'EUR'))),
+            t.nebenkosten&&h("span",null,"NK: ",h("b",{style:{color:T.txt}},e$(+t.nebenkosten))),
+            t.kaution&&h("span",null,"Kaution: ",h("b",{style:{color:T.txt}},e$(+t.kaution))),
+            t.start_date&&h("span",null,"Desde: ",h("b",{style:{color:T.txt}},t.start_date))
+          ),
+          t.notes&&h("div",{style:{marginTop:6,fontSize:11,color:T.wrn}},"⚠ "+t.notes)
         ))
-      )
+      ),
+      // Historial inquilinos
+      tHist.length>0&&h(Card,null,
+        h("div",{style:{fontSize:12,fontWeight:700,color:T.mut,textTransform:"uppercase",letterSpacing:.6,marginBottom:12}},"Historial"),
+        tHist.map((t,i)=>h("div",{key:i,style:{background:T.bg,border:`1px solid ${T.brd}`,borderLeft:`4px solid ${T.brd}`,borderRadius:10,padding:"10px 14px",marginBottom:6,opacity:.75}},
+          h("div",{style:{display:"flex",justifyContent:"space-between"}},
+            h("span",{style:{fontWeight:600,fontSize:13}},t.name),
+            h("span",{style:{fontSize:11,color:T.mut}},t.start_date+(t.end_date?" → "+t.end_date:" → ?"))
+          ),
+          t.notes&&h("div",{style:{fontSize:11,color:T.mut,marginTop:4}},t.notes)
+        ))
+      ),
+      p.notes&&h("div",{style:{marginTop:12,fontSize:12,color:T.mut,padding:"10px 14px",background:T.card,borderRadius:8,border:`1px solid ${T.brd}`}},"📝 "+p.notes)
+    );
+  }
+
+  // PORTFOLIO LIST VIEW
+  const totalPortVal=props.filter(p=>p.kaufpreis&&p.kaufpreis_cur==='EUR').reduce((s,p)=>s+(+p.kaufpreis||0),0);
+  const totalRateAll=props.reduce((s,p)=>s+totalRate(p.id),0);
+  const totalRentaAll=props.filter(p=>p.country!=='MX').reduce((s,p)=>s+rentaActual(p.id),0);
+  const byCountry=["DE","NL","ES","MX"].map(c=>({c,count:props.filter(p=>p.country===c).length})).filter(x=>x.count>0);
+
+  return h("div",null,
+    h("div",{style:{marginBottom:20}},
+      h("h2",{className:"serif",style:{fontSize:24,fontWeight:800,color:T.txt,margin:0}},
+        "🏘️ Portafolio Inmuebles"),
+      h("div",{style:{fontSize:13,color:T.mut,marginTop:4}},props.length+" propiedades · 4 países")
     ),
-    // PER PERSON VIEW
-    view==="persons"&&h("div",{style:{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:14}},
-      PERSONAS.map(persona=>h(Card,{key:persona},
-        h("div",{style:{marginBottom:14}},
-          h("div",{style:{fontSize:16,fontWeight:700,color:T.txt}},persona),
-          h("div",{className:"num",style:{fontSize:24,fontWeight:800,color:T.err,marginTop:4}},e$(gastos.filter(t=>t.persona===persona).reduce((s,t)=>s+Math.abs(t.monto),0)))
-        ),
-        gastos.filter(t=>t.persona===persona).slice().sort((a,b)=>a.monto-b.monto).slice(0,5).map((t,i)=>{
-          const c=FIN_CATS.find(x=>x.id===t.cat);
-          return h("div",{key:t.id,style:{display:"flex",justifyContent:"space-between",padding:"6px 0",borderBottom:`1px solid ${T.brd}`,fontSize:12}},
-            h("span",{style:{color:T.mut,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"60%"}},c?c.icon+" ":""+(t.desc.slice(0,25))),
-            h("span",{className:"num",style:{fontWeight:600,color:T.err}},e$(Math.abs(t.monto)))
-          );
-        })
+    // Summary KPIs
+    h("div",{style:{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:20}},
+      [
+        {k:"Portfolio value (EUR)",v:totalPortVal.toLocaleString("de-DE",{maximumFractionDigits:0})+" €"},
+        {k:"Cuotas totales/mes",v:totalRateAll.toLocaleString("de-DE",{minimumFractionDigits:2})+" €",neg:true},
+        {k:"Rentas EUR/mes",v:totalRentaAll.toLocaleString("de-DE",{minimumFractionDigits:2})+" €",pos:true},
+        {k:"Resultado neto EUR",v:(totalRentaAll-totalRateAll).toLocaleString("de-DE",{minimumFractionDigits:2})+" €",res:totalRentaAll-totalRateAll},
+      ].map((k,i)=>h(Card,{key:i,style:{padding:14}},
+        h("div",{style:{fontSize:10,textTransform:"uppercase",letterSpacing:.7,color:T.mut,fontWeight:700,marginBottom:5}},k.k),
+        h("div",{className:"num",style:{fontSize:17,fontWeight:800,color:k.res!==undefined?(k.res>=0?T.ok:T.err):k.neg?T.err:k.pos?T.ok:T.txt}},k.v)
       ))
+    ),
+    // Country breakdown
+    h("div",{style:{display:"flex",gap:8,marginBottom:16}},
+      byCountry.map(({c,count})=>h("div",{key:c,style:{display:"flex",alignItems:"center",gap:5,padding:"4px 12px",borderRadius:99,background:COUNTRY_COLOR[c],color:COUNTRY_TXT[c],fontSize:12,fontWeight:700}},
+        COUNTRY_FLAG[c]+" "+c+" · "+count))
+    ),
+    // Property cards
+    h("div",{style:{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:12}},
+      props.map(p=>{
+        const res=resultado(p.id);
+        const ls=loansOf(p.id);
+        const tAct=tenantsOf(p.id).filter(t=>t.activo);
+        return h("div",{key:p.id,onClick:()=>setSel(p.id),
+          style:{background:T.card,border:`1px solid ${T.brd}`,borderRadius:14,padding:16,cursor:"pointer",transition:"box-shadow .15s"},
+          onMouseEnter:e=>e.currentTarget.style.boxShadow="0 4px 20px rgba(0,0,0,.10)",
+          onMouseLeave:e=>e.currentTarget.style.boxShadow="none"},
+          h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}},
+            h("div",null,
+              h("div",{style:{fontWeight:800,fontSize:15,color:T.txt}},p.name),
+              h("div",{style:{fontSize:12,color:T.mut,marginTop:2}},p.address)
+            ),
+            h("div",{style:{fontSize:10,padding:"2px 8px",borderRadius:99,background:COUNTRY_COLOR[p.country],color:COUNTRY_TXT[p.country],fontWeight:700,flexShrink:0}},COUNTRY_FLAG[p.country]+" "+p.country)
+          ),
+          h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:10}},
+            [
+              {k:"Saldo",v:ls.length?e$(totalSaldo(p.id)):"—"},
+              {k:"Cuota",v:ls.length?e$(totalRate(p.id)):"—"},
+              {k:"Resultado",v:res!==null?null:"—",res},
+            ].map((k,i)=>h("div",{key:i,style:{background:T.bg,borderRadius:8,padding:"8px 10px"}},
+              h("div",{style:{fontSize:10,color:T.mut,fontWeight:600,textTransform:"uppercase",letterSpacing:.5,marginBottom:3}},k.k),
+              k.res!==undefined&&k.res!==null?
+                h("div",{className:"num",style:{fontSize:12,fontWeight:700,color:k.res>=0?T.ok:T.err}},(k.res>=0?"+ ":"− ")+e$(Math.abs(k.res))):
+                h("div",{className:"num",style:{fontSize:12,fontWeight:700,color:T.txt}},k.v)
+            ))
+          ),
+          tAct.length>0&&h("div",{style:{fontSize:12,color:T.mut}},
+            "👤 "+tAct.map(t=>t.name.split(" ")[0]).join(", ")
+          )
+        );
+      })
     )
   );
 }
@@ -1447,69 +1525,12 @@ function NewBelegForm({cid,onSave}){
   );
 }
 
-// ─── MODULE: SHOPPING ───────────────────────────────────────────────────────────
-function ShoppingModule({items,setItems}){
-  const[tienda,setTienda]=useState("ALDI");
-  const[newItem,setNewItem]=useState("");
-  const[newCat,setNewCat]=useState("General");
-  const tiendaItems=items.filter(i=>i.tienda===tienda);
-  const done=tiendaItems.filter(i=>i.done).length;
-  const total=tiendaItems.length;
-  const toggle=id=>setItems(prev=>prev.map(i=>i.id===id?{...i,done:!i.done}:i));
-  const addItem=()=>{if(!newItem.trim())return;setItems(prev=>[...prev,{id:uid(),tienda,cat:newCat,item:newItem.trim(),done:false}]);setNewItem("");};
-  const clearDone=()=>setItems(prev=>prev.filter(i=>!(i.tienda===tienda&&i.done)));
-  const cats=tienda==="ALDI"?ALDI_CATS:["General"];
-  const byCat=cats.map(cat=>({cat,items:tiendaItems.filter(i=>(tienda==="ALDI"?i.cat===cat:true)&&!i.done)})).filter(g=>tienda!=="ALDI"?g.items.length>0:true);
-  const doneItems=tiendaItems.filter(i=>i.done);
-  return h("div",null,
-    h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:20}},
-      h("div",null,
-        h("h1",{className:"serif",style:{margin:0,fontSize:26,fontWeight:700,color:T.txt}},"Shopping"),
-        h("p",{style:{margin:"4px 0 0",color:T.mut,fontSize:13}},`${total-done} pendientes · ${done} comprados`)
-      ),
-      done>0&&h(Btn,{v:"s",sm:true,onClick:clearDone},"✓ Limpiar comprados")
-    ),
-    h("div",{style:{display:"flex",gap:3,marginBottom:20,background:"#EDE5D8",padding:4,borderRadius:10}},
-      TIENDAS.map(t=>h("button",{key:t,onClick:()=>setTienda(t),style:{padding:"7px 16px",borderRadius:7,border:"none",cursor:"pointer",background:tienda===t?T.card:"transparent",color:tienda===t?T.txt:T.mut,fontSize:13,fontWeight:tienda===t?600:400,boxShadow:tienda===t?"0 1px 4px rgba(0,0,0,.08)":"none"}},t,
-        h("span",{style:{marginLeft:6,fontSize:11,color:tienda===t?T.err:T.brd,fontWeight:700}},items.filter(i=>i.tienda===t&&!i.done).length||"")
-      ))
-    ),
-    // Add item
-    h(Card,{style:{padding:12,marginBottom:16,display:"flex",gap:8,alignItems:"center"}},
-      tienda==="ALDI"&&h("select",{value:newCat,onChange:e=>setNewCat(e.target.value),style:{padding:"8px 10px",border:`1px solid ${T.brd}`,borderRadius:8,fontSize:13,background:T.card,color:T.txt}},
-        ALDI_CATS.map(c=>h("option",{key:c,value:c},c))
-      ),
-      h("input",{value:newItem,onChange:e=>setNewItem(e.target.value),onKeyDown:e=>e.key==="Enter"&&addItem(),placeholder:`Agregar a ${tienda}...`,style:{flex:1,padding:"8px 12px",border:`1px solid ${T.brd}`,borderRadius:8,fontSize:13,background:T.card}}),
-      h(Btn,{sm:true,onClick:addItem},"+  Agregar")
-    ),
-    // Items by category
-    h("div",{style:{display:"grid",gridTemplateColumns:tienda==="ALDI"?"repeat(2,1fr)":"1fr",gap:12}},
-      byCat.map(({cat,items:catItems})=>catItems.length>0&&h(Card,{key:cat,style:{padding:14}},
-        h("div",{style:{fontSize:11,fontWeight:700,color:T.mut,textTransform:"uppercase",letterSpacing:.7,marginBottom:10}},cat),
-        catItems.map(item=>h("div",{key:item.id,onClick:()=>toggle(item.id),style:{display:"flex",alignItems:"center",gap:10,padding:"7px 4px",cursor:"pointer",borderBottom:`1px solid ${T.brd}`,opacity:item.done?.4:1}},
-          h("div",{style:{width:20,height:20,border:`2px solid ${item.done?T.ok:T.brd}`,borderRadius:4,background:item.done?T.ok:"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,transition:"all .15s"}},
-            item.done&&h("span",{style:{color:"#fff",fontSize:12,fontWeight:700}},"✓")
-          ),
-          h("span",{style:{fontSize:14,textDecoration:item.done?"line-through":"none",color:item.done?T.mut:T.txt}},item.item),
-          h("button",{onClick:e=>{e.stopPropagation();setItems(prev=>prev.filter(i=>i.id!==item.id));},style:{marginLeft:"auto",border:"none",background:"none",color:T.brd,fontSize:14,cursor:"pointer",padding:"0 4px"}},"✕")
-        ))
-      ))
-    ),
-    // Done items
-    doneItems.length>0&&h(Card,{style:{padding:14,marginTop:12,opacity:.6}},
-      h("div",{style:{fontSize:11,fontWeight:700,color:T.mut,textTransform:"uppercase",letterSpacing:.7,marginBottom:10}},"✓ Comprados ({doneItems.length})"),
-      doneItems.map(item=>h("div",{key:item.id,onClick:()=>toggle(item.id),style:{display:"flex",alignItems:"center",gap:10,padding:"6px 4px",cursor:"pointer",fontSize:13,color:T.mut,textDecoration:"line-through"}},
-        h("div",{style:{width:18,height:18,borderRadius:4,background:T.ok,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}},h("span",{style:{color:"#fff",fontSize:11}},"✓")),
-        item.item
-      ))
-    )
-  );
-}
+
 
 // ─── SUPABASE ─────────────────────────────────────────────────────────────────
 const SUPA_URL="https://rvldlwkujmxwdgqhoafq.supabase.co";
 const SUPA_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2bGRsd2t1am14d2RncWhvYWZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MzMxNDYsImV4cCI6MjA5MDMwOTE0Nn0.9YIUe9Xkd6JyRPrMkTsKFl_W5yuqD2ctbJtoz-ZirAY";
-supabase=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+const supabase=window.supabase.createClient(SUPA_URL,SUPA_KEY);
 
 // ─── LOGIN SCREEN ─────────────────────────────────────────────────────────────
 function LoginScreen(){
@@ -1584,10 +1605,8 @@ function App(){
   const[pisosLoaded,setPisosLoaded]=useState(false);
   const[rePagos,setRePagos]=useState(()=>store.load("re_p",[]));
   const[reGastos,setReGastos]=useState(()=>store.load("re_g",[]));
-  const[finTxns,setFinTxns]=useState(()=>store.load("fin_txns",FIN_SAMPLE));
   const[kClients,setKClients]=useState(()=>store.load("k_clients",K_CLIENTS_DEFAULT));
   const[kPos,setKPos]=useState(()=>store.load("k_pos",K_POSITIONS_DEFAULT));
-  const[shopItems,setShopItems]=useState(()=>store.load("shop_items",SHOP_SAMPLE));
 
   useEffect(()=>{
     supabase.auth.getSession().then(({data:{session:s}})=>setSession(s));
@@ -1612,10 +1631,8 @@ function App(){
     }
   },[session]);
 
-  useEffect(()=>store.save("fin_txns",finTxns),[finTxns]);
   useEffect(()=>store.save("k_clients",kClients),[kClients]);
   useEffect(()=>store.save("k_pos",kPos),[kPos]);
-  useEffect(()=>store.save("shop_items",shopItems),[shopItems]);
 
   // Loading
   if(session===undefined)return h("div",{style:{height:"100vh",background:T.bg,display:"flex",alignItems:"center",justifyContent:"center",gap:10,fontSize:14,color:T.mut}},"Cargando...");
@@ -1628,11 +1645,10 @@ function App(){
   return h("div",{style:{display:"flex",height:"100vh",background:T.bg,overflow:"hidden"}},
     h(Sidebar,{mod,setMod,alerts,user:session.user,onSignOut:()=>supabase.auth.signOut()}),
     h("main",{style:{flex:1,overflow:"auto",padding:"22px 26px"}},
-      mod==="home"&&h(HomeDashboard,{pisos,rePagos,finTxns,oposItems:kPos,shopItems,setMod}),
+      mod==="home"&&h(HomeDashboard,{pisos,rePagos,setMod}),
       mod==="re"&&h(RealEstateModule,{pisos,setPisos,rePagos,setRePagos,reGastos,setReGastos}),
-      mod==="finance"&&h(FinanceModule,{txns:finTxns,setTxns:setFinTxns}),
-      mod==="opos"&&h(KanzleiModule,{kClients,setKClients,kPos,setKPos}),
-      mod==="shopping"&&h(ShoppingModule,{items:shopItems,setItems:setShopItems})
+      mod==="portfolio"&&h(PortafolioModule,null),
+      mod==="opos"&&h(KanzleiModule,{kClients,setKClients,kPos,setKPos})
     )
   );
 }
