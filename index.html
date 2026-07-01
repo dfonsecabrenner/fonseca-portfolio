@@ -162,7 +162,6 @@ const MODULES=[
   {id:"re",icon:"🏠",label:"Real Estate (Alcoy)"},
   {id:"portfolio",icon:"🏘️",label:"Portafolio"},
   {id:"opos",icon:"⚖️",label:"Fonseca Kanzlei"},
-  {id:"espana",icon:"🇪🇸",label:"España (Rosemarie)"},
 ];
 
 function Sidebar({mod,setMod,alerts,user,onSignOut}){
@@ -432,12 +431,23 @@ function RealEstateModule({pisos,setPisos,rePagos,setRePagos,reGastos,setReGasto
   const[mp,setMp]=useState(null);
   const[showAddPiso,setShowAddPiso]=useState(false);
   const[exts,setExts]=useState(()=>store.load("re_exts",[]));
+  const[caixa,setCaixa]=useState({p:[],g:[]});
+  useEffect(()=>{
+    supabase.from('es_caixabank_movimientos').select('*').eq('re_confirmed',true).then(({data})=>{
+      const ms=data||[];
+      const p=ms.filter(m=>m.re_cat==='Renta cobrada'&&Number(m.amount)>0).map(m=>({id:'cb_'+m.id,pisoId:m.re_piso_id||'',monto:Number(m.amount),fecha:m.date,mes:new Date(m.date).getMonth(),"año":new Date(m.date).getFullYear(),metodo:'CaixaBank',fromExt:true}));
+      const g=ms.filter(m=>Number(m.amount)<0&&m.re_cat&&m.re_cat!=='Renta cobrada'&&m.re_cat!=='Ignorar').map(m=>({id:'cb_'+m.id,pisoId:m.re_piso_id||'',categoria:m.re_cat,descripcion:m.payee,monto:Math.abs(Number(m.amount)),fecha:m.date,fromExt:true}));
+      setCaixa({p,g});
+    });
+  },[]);
   const sP=d=>{setRePagos(d);store.save("re_p",d);};
   const sG=d=>{setReGastos(d);store.save("re_g",d);};
   const sE=d=>{setExts(d);store.save("re_exts",d);};
   const sPisos=d=>{setPisos(d);store.save("re_pisos",d);if(d.length)d.forEach(p=>{if(p.dbId)savePisoToDB(p);});};
   const opMod=(t,p)=>{setMp(p||null);setModal(t);};
   const goToPiso=id=>{setSelPiso(id);setView("pisos");};
+  const allPagos=[...rePagos.filter(x=>!x.fromExt),...caixa.p];
+  const allGastos=[...reGastos.filter(x=>!x.fromExt),...caixa.g];
   const subNav=[
     {id:"dash",l:"Dashboard"},{id:"pisos",l:"Pisos"},{id:"inq",l:"Inquilinos"},
     {id:"alr",l:"Alertas ⚑"},{id:"ext",l:"Extracto"},{id:"pagos",l:"Pagos"},
@@ -449,14 +459,14 @@ function RealEstateModule({pisos,setPisos,rePagos,setRePagos,reGastos,setReGasto
         style:{padding:"6px 14px",borderRadius:7,border:"none",cursor:"pointer",background:view===t.id?T.card:"transparent",
           color:view===t.id?T.txt:T.mut,fontSize:12,fontWeight:view===t.id?600:400,boxShadow:view===t.id?"0 1px 4px rgba(0,0,0,.08)":"none"}},t.l))
     ),
-    view==="dash"&&h(REDashboard,{pisos,pagos:rePagos,gastos:reGastos,go:setView,goToPiso,opMod,onAddPiso:()=>setShowAddPiso(true)}),
+    view==="dash"&&h(REDashboard,{pisos,pagos:allPagos,gastos:allGastos,go:setView,goToPiso,opMod,onAddPiso:()=>setShowAddPiso(true)}),
     view==="pisos"&&h(REPisos,{pisos,savePisos:sPisos,initialSel:selPiso,onSelChange:setSelPiso}),
     view==="inq"&&h(REInquilinos,{pisos,savePisos:sPisos}),
     view==="alr"&&h(REAlertas,null),
     view==="ext"&&h(REExtracto,{exts,saveExts:sE,pagos:rePagos,savePagos:sP,gastos:reGastos,saveGastos:sG}),
-    view==="pagos"&&h(REPagos,{pagos:rePagos,savePagos:sP,pisos}),
-    view==="gastos"&&h(REGastos,{gastos:reGastos,saveGastos:sG}),
-    view==="fiscal"&&h(REFiscal,{pagos:rePagos,gastos:reGastos}),
+    view==="pagos"&&h(REPagos,{pagos:allPagos,savePagos:sP,pisos}),
+    view==="gastos"&&h(REGastos,{gastos:allGastos,saveGastos:sG}),
+    view==="fiscal"&&h(REFiscal,{pagos:allPagos,gastos:allGastos}),
     modal==="pago"&&h(REPagoForm,{pisoId:mp,pisos,onClose:()=>setModal(null),onSave:p=>{sP([...rePagos,p]);setModal(null);}}),
     modal==="gasto"&&h(REGastoForm,{pisos,onClose:()=>setModal(null),onSave:g=>{sG([...reGastos,g]);setModal(null);}}),
     showAddPiso&&h(AddPisoModal,{onClose:()=>setShowAddPiso(false),onSave:p=>{sPisos([...pisos,p]);setShowAddPiso(false);}})
@@ -750,46 +760,56 @@ function REAlertas(){
 }
 
 function REExtracto({exts,saveExts,pagos,savePagos,gastos,saveGastos}){
-  const[tab,setTab]=useState("load");
-  const[drag,setDrag]=useState(false);
-  const[movs,setMovs]=useState([]);
-  const[fn,setFn]=useState("");
-  const[done,setDone]=useState(false);
-  const ref=useRef();
-  const parseCSV=txt=>{const ls=txt.trim().split(/\r?\n/).filter(l=>l.trim());if(!ls.length)return[];const sep=ls[0].includes(";")?";":",";const hdr=ls[0].split(sep).map(h=>h.trim().replace(/^"|"$/g,"").toLowerCase());return ls.slice(1).map(l=>{const c=l.split(sep).map(c=>c.trim().replace(/^"|"$/g,""));const o={};hdr.forEach((h,i)=>o[h]=c[i]||"");return o;});};
-  const loadFile=file=>{if(!file)return;setFn(file.name);const r=new FileReader();r.onload=e=>{const rows=parseCSV(e.target.result);const ks=Object.keys(rows[0]||{});const fk=ks.find(k=>/fecha|date/i.test(k)),dk=ks.find(k=>/descri|concepto/i.test(k)),mk=ks.find(k=>/importe|amount/i.test(k));const ms=rows.map(row=>{const desc=row[dk]||"",montoStr=(row[mk]||"0").replace(/\./g,"").replace(",",".");const monto=parseFloat(montoStr)||0;const{c,p}=autoCatRE(desc);return{id:uid(),fecha:row[fk]||"",desc,monto,cat:c,piso:p,ok:!!c};});setMovs(ms);setTab("rev");};r.readAsText(file,"utf-8");};
-  const upd=(id,f,v)=>setMovs(p=>p.map(m=>m.id===id?{...m,[f]:v}:m));
-  const confirm=()=>{const toP=movs.filter(m=>m.cat&&m.cat!=="Ignorar");const newP=toP.filter(m=>m.cat==="Renta cobrada"&&m.monto>0&&m.piso).map(m=>({id:uid(),pisoId:m.piso,monto:m.monto,fecha:m.fecha,mes:new Date(m.fecha).getMonth(),año:new Date(m.fecha).getFullYear(),metodo:"Transferencia",fromExt:true,key:`${new Date(m.fecha).getFullYear()}-${String(new Date(m.fecha).getMonth()+1).padStart(2,"0")}`}));const newG=toP.filter(m=>m.cat!=="Renta cobrada"&&m.monto<0).map(m=>({id:uid(),pisoId:m.piso||"",categoria:m.cat,descripcion:m.desc,monto:Math.abs(m.monto),fecha:m.fecha,fromExt:true}));savePagos([...pagos,...newP]);saveGastos([...gastos,...newG]);saveExts([...exts,{id:uid(),fn,fecha:new Date().toLocaleDateString("es-ES"),total:movs.length}]);setDone(true);};
+  const[movs,setMovs]=useState(null);
+  const[pisos,setPisos]=useState([]);
+  const[saving,setSaving]=useState(false);
+  const[msg,setMsg]=useState(null);
+  const bb="1px solid "+T.brd;
+  const load=()=>{
+    Promise.all([
+      supabase.from('es_caixabank_movimientos').select('*').order('date',{ascending:false}),
+      supabase.from('re_properties').select('piso_id').order('piso_id')
+    ]).then(([m,p])=>{
+      const rows=(m.data||[]).map(x=>{
+        const sug=autoCatRE((x.payee||'')+' '+(x.note||''));
+        return {id:x.id,fecha:x.date,desc:x.payee||'',monto:Number(x.amount)||0,cat:x.re_cat||sug.c,piso:x.re_piso_id||sug.p,dirty:false};
+      });
+      setPisos((p.data||[]).map(r=>r.piso_id));
+      setMovs(rows);
+    });
+  };
+  useEffect(load,[]);
+  const upd=(id,f,v)=>setMovs(p=>p.map(m=>m.id===id?{...m,[f]:v,dirty:true}:m));
+  const save=()=>{
+    const dirty=movs.filter(m=>m.dirty);
+    if(!dirty.length){setMsg("Sin cambios que guardar");return;}
+    setSaving(true);
+    Promise.all(dirty.map(m=>supabase.from('es_caixabank_movimientos').update({re_cat:m.cat||null,re_piso_id:m.piso||null,re_confirmed:!!(m.cat&&m.cat!=="")}).eq('id',m.id)))
+    .then(rs=>{const errs=rs.filter(r=>r&&r.error).length;setMovs(p=>p.map(m=>({...m,dirty:false})));setSaving(false);setMsg(errs?("Error al guardar "+errs):("Guardado "+new Date().toLocaleTimeString("es-ES")));});
+  };
+  if(!movs)return h("div",{style:{color:T.mut,fontSize:14,padding:20}},"Cargando extracto de CaixaBank...");
+  const sinCat=movs.filter(m=>!m.cat).length;
+  const dirtyN=movs.filter(m=>m.dirty).length;
   return h("div",null,
-    h(SectionHeader,{title:"Extracto Bancario",sub:"Carga el CSV de CaixaBank y categoriza automáticamente"}),
-    h("div",{style:{display:"flex",gap:3,marginBottom:18,background:"#EDE5D8",padding:4,borderRadius:10}},
-      [{id:"load",l:"① Cargar"},{id:"rev",l:`② Revisar${movs.length?` (${movs.length})`:""}`}].map(t=>h("button",{key:t.id,onClick:()=>setTab(t.id),style:{padding:"7px 16px",borderRadius:7,border:"none",cursor:"pointer",background:tab===t.id?T.card:"transparent",color:tab===t.id?T.txt:T.mut,fontSize:13,fontWeight:tab===t.id?600:400}},t.l))
-    ),
-    tab==="load"&&h("div",{style:{maxWidth:480}},
-      h("div",{onDragOver:e=>{e.preventDefault();setDrag(true);},onDragLeave:()=>setDrag(false),onDrop:e=>{e.preventDefault();setDrag(false);loadFile(e.dataTransfer.files[0]);},onClick:()=>ref.current&&ref.current.click(),style:{border:`2px dashed ${drag?T.acc:T.brd}`,borderRadius:14,padding:48,textAlign:"center",cursor:"pointer",background:drag?T.aLt:"#FAF7F2"}},
-        h("input",{ref,type:"file",accept:".csv,.txt",style:{display:"none"},onChange:e=>loadFile(e.target.files[0])}),
-        h("div",{style:{fontSize:36,marginBottom:10}},"🏦"),
-        h("div",{className:"serif",style:{fontSize:16,fontWeight:700,marginBottom:6}},"Arrastra el extracto CSV"),
-        h(Btn,{v:"s",sm:true},"Seleccionar archivo")
+    h(SectionHeader,{title:"Extracto Bancario · CaixaBank",sub:"Movimientos sincronizados desde CaixaBank. Asigna categoría y depa; se guarda en la nube y alimenta Pagos, Gastos y Fiscal."}),
+    h("div",{style:{display:"flex",gap:12,alignItems:"center",marginBottom:12,flexWrap:"wrap"}},
+      h(KPI,{label:"Movimientos",val:String(movs.length)}),
+      h(KPI,{label:"Sin categoría",val:String(sinCat),color:sinCat?T.err:T.ok}),
+      h("div",{style:{marginLeft:"auto",display:"flex",gap:12,alignItems:"center"}},
+        msg&&h("span",{style:{fontSize:12,color:T.mut}},msg),
+        h(Btn,{sm:true,onClick:save},saving?"Guardando...":("Guardar"+(dirtyN?" ("+dirtyN+")":"")))
       )
     ),
-    tab==="rev"&&movs.length>0&&h("div",null,
-      h("div",{style:{display:"flex",gap:10,alignItems:"center",marginBottom:12,flexWrap:"wrap"}},
-        h(KPI,{label:"Total",val:movs.length}),
-        h(KPI,{label:"Sin categoría",val:movs.filter(m=>!m.cat).length,color:T.err}),
-        h("div",{style:{marginLeft:"auto"}},done?h(Tag,{tx:"✓ Guardado",c:"o"}):h(Btn,{sm:true,onClick:confirm},"Confirmar "+movs.filter(m=>m.cat&&m.cat!=="Ignorar").length+" movs"))
-      ),
-      h(Card,{style:{padding:0,overflow:"hidden"}},
-        h("table",{style:{width:"100%",borderCollapse:"collapse"}},
-          h("thead",null,h("tr",{style:{background:T.bg}},["Fecha","Descripción","Importe","Categoría","Piso"].map((hd,i)=>h("th",{key:i,style:{padding:"9px 10px",textAlign:"left",fontSize:11,fontWeight:700,color:T.mut,textTransform:"uppercase",borderBottom:`1px solid ${T.brd}`}},hd)))),
-          h("tbody",null,movs.slice(0,30).map((m,idx)=>h("tr",{key:m.id,style:{borderBottom:`1px solid ${T.brd}`,background:idx%2===0?T.card:"#FAF7F2"}},
-            h("td",{className:"num",style:{padding:"7px 10px",fontSize:12,color:T.mut}},m.fecha),
-            h("td",{style:{padding:"7px 10px",fontSize:12,maxWidth:200,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},m.desc),
-            h("td",{className:"num",style:{padding:"7px 10px",fontWeight:700,fontSize:13,color:m.monto>0?T.ok:T.err}},(m.monto>0?"+":"")+e$(m.monto)),
-            h("td",{style:{padding:"4px 6px"}},h("select",{value:m.cat,onChange:e=>upd(m.id,"cat",e.target.value),style:{width:"100%",padding:"5px 7px",border:`1px solid ${T.brd}`,borderRadius:7,fontSize:12,background:T.card}},h("option",{value:""},"— categoría —"),RE_CATS.map(c=>h("option",{key:c,value:c},c)))),
-            h("td",{style:{padding:"4px 6px"}},h("select",{value:m.piso,onChange:e=>upd(m.id,"piso",e.target.value),style:{width:"100%",padding:"5px 7px",border:`1px solid ${T.brd}`,borderRadius:7,fontSize:12,background:T.card}},h("option",{value:""},"General"),PISOS_BASE.map(p=>h("option",{key:p.id,value:p.id},p.id))))
-          )))
-        )
+    h(Card,{style:{padding:0,overflow:"hidden"}},
+      h("table",{style:{width:"100%",borderCollapse:"collapse"}},
+        h("thead",null,h("tr",{style:{background:T.bg}},["Fecha","Concepto","Importe","Categoría","Depa"].map((hd,i)=>h("th",{key:i,style:{padding:"9px 10px",textAlign:"left",fontSize:11,fontWeight:700,color:T.mut,textTransform:"uppercase",borderBottom:bb}},hd)))),
+        h("tbody",null,movs.map((m,idx)=>h("tr",{key:m.id,style:{borderBottom:bb,background:idx%2===0?T.card:"#FAF7F2"}},
+          h("td",{className:"num",style:{padding:"7px 10px",fontSize:12,color:T.mut,whiteSpace:"nowrap"}},m.fecha),
+          h("td",{style:{padding:"7px 10px",fontSize:12,maxWidth:230,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},m.desc),
+          h("td",{className:"num",style:{padding:"7px 10px",fontWeight:700,fontSize:13,color:m.monto>0?T.ok:T.err}},(m.monto>0?"+":"")+e$(m.monto)),
+          h("td",{style:{padding:"4px 6px"}},h("select",{value:m.cat,onChange:e=>upd(m.id,"cat",e.target.value),style:{width:"100%",padding:"5px 7px",border:bb,borderRadius:7,fontSize:12,background:T.card}},h("option",{value:""},"— categoría —"),RE_CATS.map(c=>h("option",{key:c,value:c},c)))),
+          h("td",{style:{padding:"4px 6px"}},h("select",{value:m.piso,onChange:e=>upd(m.id,"piso",e.target.value),style:{width:"100%",padding:"5px 7px",border:bb,borderRadius:7,fontSize:12,background:T.card}},h("option",{value:""},"General"),pisos.map(p=>h("option",{key:p,value:p},p))))
+        )))
       )
     )
   );
@@ -1735,42 +1755,6 @@ function LoginScreen(){
 }
 
 // ─── ROOT APP ──────────────────────────────────────────────────────────────────
-function EspanaModule(){
-  const [data,setData]=useState(null);
-  useEffect(()=>{
-    Promise.all([
-      supabase.from('es_caixabank_cuentas').select('*'),
-      supabase.from('es_caixabank_movimientos').select('*').order('date',{ascending:false})
-    ]).then(([c,m])=>setData({cuentas:c.data||[],movs:m.data||[]}));
-  },[]);
-  if(!data)return h("div",{style:{color:T.mut,fontSize:14}},"Cargando...");
-  const {cuentas,movs}=data;
-  const saldo=cuentas.reduce((s,c)=>s+(Number(c.balance)||0),0);
-  const ingresos=movs.filter(m=>Number(m.amount)>0).reduce((s,m)=>s+Number(m.amount),0);
-  const gastos=movs.filter(m=>Number(m.amount)<0).reduce((s,m)=>s+Number(m.amount),0);
-  const bb="1px solid "+T.brd;
-  return h("div",null,
-    h(SectionHeader,{title:"España · CaixaBank (Rosemarie)",sub:"ℹ️ Informativo — cuenta de España gestionada por Rosemarie. NO forma parte del presupuesto/P&L familiar."}),
-    h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:12,marginBottom:20}},
-      h(Card,{style:{padding:16}},h(KPI,{label:"Saldo CaixaBank",val:e$(saldo),big:true})),
-      h(Card,{style:{padding:16}},h(KPI,{label:"Ingresos",val:e$(ingresos),color:T.ok})),
-      h(Card,{style:{padding:16}},h(KPI,{label:"Gastos",val:e$(gastos),color:T.err})),
-      h(Card,{style:{padding:16}},h(KPI,{label:"Movimientos",val:String(movs.length)}))
-    ),
-    h(Card,{style:{padding:0,overflow:"hidden"}},
-      h("table",{style:{width:"100%",borderCollapse:"collapse",fontSize:13}},
-        h("thead",null,h("tr",{style:{background:T.bg}},
-          ["Fecha","Concepto","Importe"].map((hd,i)=>h("th",{key:i,style:{padding:"10px 14px",textAlign:i===2?"right":"left",fontSize:11,fontWeight:700,color:T.mut,textTransform:"uppercase",letterSpacing:.6,borderBottom:bb}},hd)))),
-        h("tbody",null, movs.map((m,i)=>h("tr",{key:m.id||i,style:{background:i%2===0?T.card:"#FAF7F2"}},
-          h("td",{style:{padding:"9px 14px",color:T.mut,whiteSpace:"nowrap",borderBottom:bb}},m.date),
-          h("td",{style:{padding:"9px 14px",color:T.txt,borderBottom:bb}},m.payee),
-          h("td",{className:"num",style:{padding:"9px 14px",textAlign:"right",fontWeight:600,borderBottom:bb,color:Number(m.amount)<0?T.err:T.ok}},e$(Number(m.amount)))
-        )))
-      )
-    )
-  );
-}
-
 function App(){
   const[session,setSession]=useState(undefined);
   const[mod,setMod]=useState("home");
@@ -1819,7 +1803,7 @@ function App(){
     h(Sidebar,{mod,setMod,alerts,user:session.user,onSignOut:()=>supabase.auth.signOut()}),
     h("main",{style:{flex:1,overflow:"auto",padding:"22px 26px"}},
       mod==="home"&&h(HomeDashboard,{pisos,rePagos,setMod}),
-      mod==="espana"&&h(EspanaModule,null),mod==="re"&&h(RealEstateModule,{pisos,setPisos,rePagos,setRePagos,reGastos,setReGastos}),
+      mod==="re"&&h(RealEstateModule,{pisos,setPisos,rePagos,setRePagos,reGastos,setReGastos}),
       mod==="portfolio"&&h(PortafolioModule,null),
       mod==="opos"&&h(KanzleiModule,{kClients,setKClients,kPos,setKPos})
     )
