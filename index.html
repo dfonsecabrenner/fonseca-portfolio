@@ -1159,6 +1159,82 @@ function PropertyDetailRich({property:p,onBack}){
 }
 
 
+function PaymentTrackingDashboard(){
+  const[charges,setCharges]=useState([]);
+  const[loading,setLoading]=useState(true);
+  const[refreshing,setRefreshing]=useState(false);
+
+  const load=()=>{
+    const now=new Date();
+    const start=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-01";
+    supabase.from("re_portfolio_rent_charges")
+      .select("*, re_portfolio(name,country), re_portfolio_tenants(name)")
+      .eq("period",start)
+      .then(({data})=>{setCharges(data||[]);setLoading(false);});
+  };
+  useEffect(load,[]);
+
+  const refresh=async()=>{
+    setRefreshing(true);
+    await supabase.rpc("generate_monthly_rent_charges");
+    await supabase.rpc("match_rent_charges");
+    load();
+    setRefreshing(false);
+  };
+
+  const STATUS={
+    paid_on_time:{label:"Pagado a tiempo",color:T.ok,bg:"#E8F0DC",icon:"✓"},
+    paid_late:{label:"Pagado tarde",color:T.wrn,bg:"#FBF6EC",icon:"⏱"},
+    unpaid:{label:"NO PAGADO — FLAG JP",color:T.err,bg:"#FBEDEA",icon:"🔴"},
+    pending:{label:"Pendiente",color:T.mut,bg:T.bg,icon:"○"},
+  };
+
+  const now=new Date();
+  const mesLabel=now.toLocaleDateString("es-ES",{month:"long",year:"numeric"});
+  const unpaidCount=charges.filter(c=>c.status==="unpaid").length;
+
+  if(loading)return h(Card,{style:{padding:20,marginBottom:16}},
+    h("div",{style:{color:T.mut,fontSize:13}},"Cargando seguimiento de pagos..."));
+
+  return h(Card,{style:{marginBottom:20,border:unpaidCount>0?`2px solid ${T.err}`:`1px solid ${T.brd}`}},
+    h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}},
+      h("div",null,
+        h("div",{style:{fontSize:14,fontWeight:800,color:T.txt}},"💰 Seguimiento de pagos — "+mesLabel),
+        unpaidCount>0&&h("div",{style:{fontSize:12,color:T.err,fontWeight:700,marginTop:2}},
+          "⚠ "+unpaidCount+" inquilino"+(unpaidCount>1?"s":"")+" sin pagar")
+      ),
+      h("button",{onClick:refresh,disabled:refreshing,
+        style:{padding:"7px 14px",background:T.acc,color:"#fff",border:"none",borderRadius:8,
+          fontSize:12,fontWeight:700,cursor:"pointer",opacity:refreshing?.6:1}},
+        refreshing?"Actualizando...":"🔄 Actualizar pagos")
+    ),
+    charges.length===0
+      ?h("div",{style:{fontSize:13,color:T.mut,padding:"10px 0"}},
+          "No hay cargos para este mes. Clic en 'Actualizar pagos'.")
+      :h("div",{style:{display:"flex",flexDirection:"column",gap:6}},
+          charges.map((c,i)=>{
+            const st=STATUS[c.status]||STATUS.pending;
+            return h("div",{key:i,
+              style:{display:"flex",justifyContent:"space-between",alignItems:"center",
+                padding:"9px 12px",background:st.bg,borderRadius:8,
+                border:c.status==="unpaid"?`1px solid #F0CFC8`:"none"}},
+              h("div",{style:{display:"flex",alignItems:"center",gap:10}},
+                h("span",{style:{fontSize:16}},st.icon),
+                h("div",null,
+                  h("div",{style:{fontSize:13,fontWeight:700,color:T.txt}},
+                    (c.re_portfolio?.name||"—")+" · "+(c.re_portfolio_tenants?.name||"—")),
+                  h("div",{style:{fontSize:11,color:st.color,fontWeight:600}},
+                    st.label+(c.paid_date?" · "+c.paid_date:""))
+                )
+              ),
+              h("div",{className:"num",style:{fontSize:14,fontWeight:800,color:T.txt}},
+                Number(c.amount_expected).toLocaleString("de-DE",{minimumFractionDigits:2})+" €")
+            );
+          })
+      )
+  );
+}
+
 function PortafolioModule(){
   const[props,setProps]=useState([]);
   const[loans,setLoans]=useState([]);
@@ -1216,6 +1292,7 @@ function PortafolioModule(){
   const byCountry=["DE","NL","ES","MX"].map(c=>({c,count:props.filter(p=>p.country===c).length})).filter(x=>x.count>0);
 
   return h("div",null,
+    h(PaymentTrackingDashboard,null),
     h("div",{style:{marginBottom:20}},
       h("h2",{className:"serif",style:{fontSize:24,fontWeight:800,color:T.txt,margin:0}},
         "🏘️ Portafolio Inmuebles"),
