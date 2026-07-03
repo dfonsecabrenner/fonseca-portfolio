@@ -968,7 +968,7 @@ function PropertyDetailRich({property:p,onBack}){
       supabase.from('re_portfolio_alerts').select('*').eq('property_id',p.id).order('sort_order'),
     ]).then(async([l,t,w,nk,v,s,se,g,su,al])=>{
       setLoans(l.data||[]);
-      setTenants(t.data||[]);
+      setTenants((t.data||[]).slice().sort((a,b)=>{const k=s=>{const m=/^(\d{2})\.(\d{2})\.(\d{4})$/.exec(s||"");return m?+(m[3]+m[2]+m[1]):-1;};return k(b.start_date)-k(a.start_date);}));
       setWeg(w.data||[]);
       setNkDetail(nk.data||[]);
       setVorschuss(v.data||[]);
