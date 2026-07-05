@@ -1041,6 +1041,54 @@ function PropertyDetailRich({property:p,onBack}){
       ))
     ),
 
+
+    // P&L Section (auto-calculated from loan + vorschuss + grundsteuer + renta activa)
+    h(Section,{no:"00",title:"P&L mensual · "+new Date().toLocaleDateString("es-ES",{month:"long",year:"numeric"})},
+      h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}},
+        // Ingresos
+        h(Card,null,
+          h("div",{style:{fontSize:12,fontWeight:700,color:T.ok,textTransform:"uppercase",marginBottom:10}},"📈 Ingresos"),
+          (()=>{
+            const tAct=tenants.find(t=>t.activo);
+            const renta=tAct?+tAct.renta:0;
+            return renta>0
+              ?h(DL,{pairs:[["Renta mensual",eur(renta)+(tAct.renta_cur==="MXN"?" MXN":"")],["Total ingresos","→ "+eur(renta)]]})
+              :h("div",{style:{fontSize:13,color:T.mut,padding:"8px 0"}},"Sin inquilino activo");
+          })()
+        ),
+        // Gastos
+        h(Card,null,
+          h("div",{style:{fontSize:12,fontWeight:700,color:T.err,textTransform:"uppercase",marginBottom:10}},"📉 Gastos recurrentes"),
+          (()=>{
+            const hipoteca=loans.reduce((s,l)=>s+(+l.rate_monthly||0),0);
+            const currYear=new Date().getFullYear();
+            const currVorschuss=vorschuss.find(v=>v.jahr===currYear)||vorschuss[vorschuss.length-1];
+            const hausgeld=currVorschuss?+currVorschuss.mes:0;
+            const currGrundsteuer=grundsteuer.find(g=>g.jahr===currYear)||grundsteuer[grundsteuer.length-1];
+            const grundsteuerMonth=currGrundsteuer?(+currGrundsteuer.betrag/12):0;
+            const total=hipoteca+hausgeld+grundsteuerMonth;
+            const tAct=tenants.find(t=>t.activo);
+            const renta=tAct?+tAct.renta:0;
+            const resultado=renta-total;
+            const pairs=[
+              hipoteca>0&&["Hipoteca/crédito",`− ${eur(hipoteca)}`],
+              hausgeld>0&&["Hausgeld ("+currYear+")",`− ${eur(hausgeld)}`],
+              grundsteuerMonth>0&&["Grundsteuer/12",`− ${eur(grundsteuerMonth)}`],
+            ].filter(Boolean);
+            return h("div",null,
+              h(DL,{pairs:[...pairs,["Total gastos","→ − "+eur(total)]]}),
+              renta>0&&h("div",{style:{marginTop:10,padding:"8px 12px",borderRadius:8,
+                background:resultado>=0?"#E8F0DC":"#FBEDEA",
+                border:`1px solid ${resultado>=0?"#B8D48A":"#F0CFC8"}`}},
+                h("div",{style:{fontSize:12,fontWeight:700,color:resultado>=0?T.ok:T.err}},"Resultado neto mes"),
+                h("div",{className:"num",style:{fontSize:18,fontWeight:800,color:resultado>=0?T.ok:T.err}},
+                  (resultado>=0?"+ ":"− ")+eur(Math.abs(resultado)))
+              )
+            );
+          })()
+        )
+      )
+    ),
     // 01 Compra
     h(Section,{no:"01",title:"Datos de compra"},
       h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}},
@@ -1235,6 +1283,23 @@ function PaymentTrackingDashboard(){
   );
 }
 
+function KPIExpandable({kpi}){
+  const[open,setOpen]=useState(false);
+  return h("div",{
+    onClick:()=>setOpen(!open),
+    style:{background:T.card,border:`1px solid ${open?T.acc:T.brd}`,borderRadius:12,padding:14,
+      cursor:"pointer",transition:"border-color .15s",position:"relative"}},
+    h("div",{style:{fontSize:10,textTransform:"uppercase",letterSpacing:.7,color:T.mut,fontWeight:700,marginBottom:5}},kpi.k),
+    h("div",{className:"num",style:{fontSize:17,fontWeight:800,
+      color:kpi.res!==undefined?(kpi.res>=0?T.ok:T.err):kpi.neg?T.err:kpi.pos?T.ok:T.txt}},kpi.v),
+    h("div",{style:{fontSize:10,color:T.acc,marginTop:4}},open?"▲ Cerrar":"▼ Desglose"),
+    open&&h("div",{style:{marginTop:10,borderTop:`1px solid ${T.brd}`,paddingTop:8,
+      display:"flex",flexDirection:"column",gap:3}},
+      (kpi.detail||[]).map((d,i)=>h("div",{key:i,style:{fontSize:11,color:T.mut,fontFamily:"monospace"}},d))
+    )
+  );
+}
+
 function PortafolioModule(){
   const[props,setProps]=useState([]);
   const[loans,setLoans]=useState([]);
@@ -1301,14 +1366,15 @@ function PortafolioModule(){
     // Summary KPIs
     h("div",{style:{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:20}},
       [
-        {k:"Portfolio value (EUR)",v:totalPortVal.toLocaleString("de-DE",{maximumFractionDigits:0})+" €"},
-        {k:"Cuotas totales/mes",v:totalRateAll.toLocaleString("de-DE",{minimumFractionDigits:2})+" €",neg:true},
-        {k:"Rentas EUR/mes",v:totalRentaAll.toLocaleString("de-DE",{minimumFractionDigits:2})+" €",pos:true},
-        {k:"Resultado neto EUR",v:(totalRentaAll-totalRateAll).toLocaleString("de-DE",{minimumFractionDigits:2})+" €",res:totalRentaAll-totalRateAll},
-      ].map((k,i)=>h(Card,{key:i,style:{padding:14}},
-        h("div",{style:{fontSize:10,textTransform:"uppercase",letterSpacing:.7,color:T.mut,fontWeight:700,marginBottom:5}},k.k),
-        h("div",{className:"num",style:{fontSize:17,fontWeight:800,color:k.res!==undefined?(k.res>=0?T.ok:T.err):k.neg?T.err:k.pos?T.ok:T.txt}},k.v)
-      ))
+        {k:"Portfolio value (EUR)",v:totalPortVal.toLocaleString("de-DE",{maximumFractionDigits:0})+" €",
+         detail:props.filter(p=>p.kaufpreis&&p.kaufpreis_cur==="EUR").map(p=>p.name+": "+(+p.kaufpreis).toLocaleString("de-DE",{maximumFractionDigits:0})+" €")},
+        {k:"Cuotas totales/mes",neg:true,v:totalRateAll.toLocaleString("de-DE",{minimumFractionDigits:2})+" €",
+         detail:props.filter(p=>totalRate(p.id)>0).map(p=>p.name+": "+totalRate(p.id).toLocaleString("de-DE",{minimumFractionDigits:2})+" €")},
+        {k:"Rentas EUR/mes",pos:true,v:totalRentaAll.toLocaleString("de-DE",{minimumFractionDigits:2})+" €",
+         detail:props.filter(p=>rentaActual(p.id)>0).map(p=>p.name+": "+rentaActual(p.id).toLocaleString("de-DE",{minimumFractionDigits:2})+" €")},
+        {k:"Resultado neto EUR",res:totalRentaAll-totalRateAll,v:(totalRentaAll-totalRateAll).toLocaleString("de-DE",{minimumFractionDigits:2})+" €",
+         detail:props.filter(p=>resultado(p.id)!==null).map(p=>{const r=resultado(p.id);return p.name+": "+(r>=0?"+":"")+r.toLocaleString("de-DE",{minimumFractionDigits:2})+" €";})},
+      ].map((k,i)=>h(KPIExpandable,{key:i,kpi:k}))
     ),
     // Country breakdown
     h("div",{style:{display:"flex",gap:8,marginBottom:16}},
