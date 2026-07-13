@@ -952,6 +952,7 @@ function PropertyDetailRich({property:p,onBack}){
   const[grundsteuer,setGrundsteuer]=useState([]);
   const[setup,setSetup]=useState([]);
   const[alerts,setAlerts]=useState([]);
+  const[cashflow,setCashflow]=useState([]);
   const[loading,setLoading]=useState(true);
 
   useEffect(()=>{
@@ -966,7 +967,8 @@ function PropertyDetailRich({property:p,onBack}){
       supabase.from('re_portfolio_grundsteuer').select('*').eq('property_id',p.id).order('jahr'),
       supabase.from('re_portfolio_setup').select('*').eq('property_id',p.id),
       supabase.from('re_portfolio_alerts').select('*').eq('property_id',p.id).order('sort_order'),
-    ]).then(async([l,t,w,nk,v,s,se,g,su,al])=>{
+      supabase.from('v_property_cashflow').select('fecha,cuenta,categoria,payee,importe_eur,flujo_tipo').eq('property_id',p.id).order('fecha',{ascending:false}),
+    ]).then(async([l,t,w,nk,v,s,se,g,su,al,cf])=>{
       setLoans(l.data||[]);
       setTenants((t.data||[]).slice().sort((a,b)=>{const k=s=>{const m=/^(\d{2})\.(\d{2})\.(\d{4})$/.exec(s||"");return m?+(m[3]+m[2]+m[1]):-1;};return k(b.start_date)-k(a.start_date);}));
       setWeg(w.data||[]);
@@ -977,6 +979,7 @@ function PropertyDetailRich({property:p,onBack}){
       setGrundsteuer(g.data||[]);
       setSetup(su.data||[]);
       setAlerts(al.data||[]);
+      setCashflow(cf.data||[]);
       if(l.data?.length){
         const ids=l.data.map(x=>x.id);
         const{data:bal}=await supabase.from('re_portfolio_loan_balances').select('*').in('loan_id',ids).order('jahr');
@@ -1202,6 +1205,40 @@ function PropertyDetailRich({property:p,onBack}){
         h("span",{style:{fontWeight:800,color:a.nivel==='r'?T.err:T.wrn}},a.nivel==='r'?"!":"•"),
         h("div",null,h("b",{style:{display:"block",color:T.acc,marginBottom:2}},a.titulo),a.detalle)
       ))
+    ),
+
+    // 09 Cashflow real (Lupa) - en vivo desde v_property_cashflow
+    cashflow.length>0&&h(Section,{no:"09",title:"Cashflow real \u00b7 Lupa",hint:"en vivo \u00b7 "+cashflow.length+" movimientos"},
+      (()=>{
+        const op=cashflow.filter(r=>r.flujo_tipo==='ingreso'||r.flujo_tipo==='gasto');
+        const ing=op.filter(r=>r.flujo_tipo==='ingreso').reduce((s,r)=>s+(+r.importe_eur||0),0);
+        const gas=op.filter(r=>r.flujo_tipo==='gasto').reduce((s,r)=>s+(+r.importe_eur||0),0);
+        const dep=cashflow.filter(r=>r.flujo_tipo==='deposito').reduce((s,r)=>s+(+r.importe_eur||0),0);
+        const byM={};
+        op.forEach(r=>{const m=(r.fecha||'').slice(0,7);if(!m)return;if(!byM[m])byM[m]={ing:0,gas:0};byM[m][r.flujo_tipo==='ingreso'?'ing':'gas']+=(+r.importe_eur||0);});
+        const meses=Object.keys(byM).sort().reverse().slice(0,12);
+        return h("div",null,
+          h("div",{style:{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:14}},
+            [["Ingresos (total)",eur(ing),T.ok],["Gastos (total)",eur(gas),T.err],["Resultado operativo",eur(ing+gas),(ing+gas)>=0?T.ok:T.err],["Dep\u00f3sitos (Kaution)",eur(dep),T.mut]].map((x,i)=>h(Card,{key:i,style:{padding:14}},
+              h("div",{style:{fontSize:10,textTransform:"uppercase",letterSpacing:.7,color:T.mut,fontWeight:700,marginBottom:5}},x[0]),
+              h("div",{className:"num",style:{fontSize:16,fontWeight:800,color:x[2]}},x[1])
+            ))
+          ),
+          h(Tbl,{head:["Mes","Ingresos","Gastos","Neto"],rows:meses.map((m,i)=>{const d=byM[m];const n=d.ing+d.gas;return h("tr",{key:i,style:{background:i%2?T.card:T.bg}},
+            h("td",{className:"num",style:{padding:"7px 10px"}},m),
+            h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right",color:T.ok}},eur(d.ing)),
+            h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right",color:T.err}},eur(d.gas)),
+            h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right",fontWeight:700,color:n>=0?T.ok:T.err}},eur(n))
+          );})}),
+          h("div",{style:{fontSize:12,color:T.mut,margin:"16px 0 8px"}},"\u00daltimos movimientos:"),
+          h(Tbl,{head:["Fecha","Concepto","Cuenta","Importe"],rows:cashflow.slice(0,15).map((r,i)=>h("tr",{key:i,style:{background:i%2?T.card:T.bg}},
+            h("td",{className:"num",style:{padding:"7px 10px",whiteSpace:"nowrap"}},r.fecha),
+            h("td",{style:{padding:"7px 10px"}},h("span",{style:{fontSize:10,padding:"1px 7px",borderRadius:99,marginRight:6,background:r.flujo_tipo==='ingreso'?"#E6F0DC":r.flujo_tipo==='gasto'?"#FBEDEA":r.flujo_tipo==='deposito'?"#EDE7F6":"#EEE",color:T.hd,fontWeight:600}},r.categoria||r.flujo_tipo),(r.payee||"").slice(0,42)),
+            h("td",{style:{padding:"7px 10px",fontSize:11,color:T.mut}},(r.cuenta||"").replace("JP \u00b7 ","")),
+            h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right",fontWeight:600,color:(+r.importe_eur)>=0?T.ok:T.err}},eur(+r.importe_eur))
+          ))})
+        );
+      })()
     )
   );
 }
