@@ -989,32 +989,77 @@ function PropertyDetailRich({property:p,onBack}){
     });
   },[p.id]);
 
-  const eur=v=>{
-    if(v===null||v===undefined)return "—";
+  const eur=(v,d=2)=>{
+    if(v===null||v===undefined||isNaN(v))return "—";
     const neg=v<0; v=Math.abs(Number(v));
-    return (neg?"−":"")+v.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+" €";
+    return (neg?"−":"")+v.toLocaleString("de-DE",{minimumFractionDigits:d,maximumFractionDigits:d})+" €";
   };
+  const eur0=v=>eur(v,0);
 
   if(loading)return h("div",{style:{padding:40,textAlign:'center',color:T.mut}},"Cargando...");
 
   const totalRate=loans.reduce((s,l)=>s+(+l.rate_monthly||0),0);
+  const saldoTot=loans.reduce((s,l)=>s+(+l.saldo||0),0);
   const tAct=tenants.find(t=>t.activo);
   const rentaActual=tAct?+tAct.renta:null;
 
+  // ---- cashflow por concepto (mes en curso + año) ----
+  const now=new Date();
+  const curMM=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
+  const curY=String(now.getFullYear());
+  const mesNombre=now.toLocaleDateString("es-ES",{month:"long",year:"numeric"});
+  const classify=(r)=>{
+    const s=((r.payee||"")+" "+(r.categoria||"")).toLowerCase();
+    if(r.flujo_tipo==='ingreso'){ if(s.includes('guth')||s.includes('abr.')||s.includes('erstatt'))return {c:"WEG Guthaben",dot:T.blue,once:true}; return {c:"Renta",dot:T.ok,pos:true}; }
+    if(s.includes('dz hyp')||s.includes('dzhyp'))return {c:"Hipoteca · DZ Hyp",dot:T.err};
+    if(s.includes('teilzahlung')||s.includes('darlehen')||s.includes('vr bank'))return {c:"Hipoteca · VR Bank",dot:T.err};
+    if(s.includes('hausgeld')||s.includes('felix')||s.includes('weg '))return {c:"Hausgeld (WEG)",dot:T.err};
+    if(s.includes('belkaw')||s.includes('strom'))return {c:"Strom",dot:T.err};
+    if(s.includes('netcologne')||s.includes('cologne')||s.includes('internet'))return {c:"Internet",dot:T.err};
+    if(s.includes('grundsteuer'))return {c:"Grundsteuer",dot:T.err};
+    if(s.includes('vermieterverein'))return {c:"Vermieterverein",dot:T.err};
+    if(r.flujo_tipo==='deposito')return {c:"Depósito (Kaution)",dot:T.mut,skip:true};
+    return {c:"Otros",dot:T.mut};
+  };
+  const opCF=cashflow.filter(r=>r.flujo_tipo==='ingreso'||r.flujo_tipo==='gasto');
+  const concMap={};
+  opCF.forEach(r=>{
+    const cl=classify(r); if(cl.skip)return;
+    const mm=(r.fecha||'').slice(0,7), yy=(r.fecha||'').slice(0,4);
+    if(!concMap[cl.c])concMap[cl.c]={c:cl.c,dot:cl.dot,pos:cl.pos,once:cl.once,mes:0,anio:0,fechaMes:null,hasMes:false};
+    const o=concMap[cl.c];
+    if(yy===curY)o.anio+=(+r.importe_eur||0);
+    if(mm===curMM){o.mes+=(+r.importe_eur||0);o.hasMes=true;if(!o.fechaMes||r.fecha>o.fechaMes)o.fechaMes=r.fecha;}
+  });
+  const orderC=["Renta","WEG Guthaben","Hipoteca · DZ Hyp","Hipoteca · VR Bank","Hausgeld (WEG)","Strom","Internet","Grundsteuer","Vermieterverein","Otros"];
+  const concepts=Object.values(concMap).filter(o=>o.anio!==0||o.hasMes).sort((a,b)=>{const ia=orderC.indexOf(a.c),ib=orderC.indexOf(b.c);return (ia<0?99:ia)-(ib<0?99:ib);});
+  const mesNeto=concepts.reduce((s,o)=>s+(o.hasMes?o.mes:0),0);
+  const anioNeto=concepts.reduce((s,o)=>s+o.anio,0);
+  const cfIng=opCF.filter(r=>r.flujo_tipo==='ingreso').reduce((s,r)=>s+(+r.importe_eur||0),0);
+  const cfGas=opCF.filter(r=>r.flujo_tipo==='gasto').reduce((s,r)=>s+(+r.importe_eur||0),0);
+  const cfDep=cashflow.filter(r=>r.flujo_tipo==='deposito').reduce((s,r)=>s+(+r.importe_eur||0),0);
+  const fmtF=f=>{const m=/^\d{4}-(\d{2})-(\d{2})/.exec(f||"");return m?m[2]+"."+m[1]:"—";};
+
   const Section=({no,title,hint,children})=>h("section",{style:{margin:"26px 0"}},
-    h("div",{style:{display:"flex",alignItems:"baseline",gap:11,marginBottom:14,borderBottom:`2px solid ${T.green_ll||'#D4E1B1'}`,paddingBottom:8}},
-      h("span",{className:"num",style:{fontSize:12,color:T.acc,fontWeight:500}},no),
+    h("div",{style:{display:"flex",alignItems:"baseline",gap:11,marginBottom:14,borderBottom:`2px solid ${T.brd}`,paddingBottom:8}},
+      h("span",{className:"num",style:{fontSize:12,color:T.acc,fontWeight:700,fontFamily:"'Playfair Display',serif"}},no),
       h("h3",{style:{fontSize:17,fontWeight:700,color:T.txt,margin:0}},title),
       hint&&h("span",{style:{marginLeft:"auto",fontSize:12,color:T.mut}},hint)
     ),
     children
   );
   const DL=({pairs})=>h("div",null,pairs.map(([l,v],i)=>h("div",{key:i,style:{display:"flex",justifyContent:"space-between",gap:14,padding:"6px 0",borderBottom:i<pairs.length-1?`1px solid ${T.brd}`:"none",fontSize:13}},
-    h("span",{style:{color:T.mut}},l),h("span",{style:{fontWeight:600,textAlign:"right"}},v)
+    h("span",{style:{color:T.mut}},l),h("span",{className:"num",style:{fontWeight:600,textAlign:"right"}},v)
   )));
   const Tbl=({head,rows})=>h("table",{style:{width:"100%",borderCollapse:"collapse",fontSize:13}},
-    h("thead",null,h("tr",null,head.map((c,i)=>h("th",{key:i,style:{textAlign:i===0?"left":"right",padding:"9px 12px",fontSize:11,background:T.tHd,color:T.hd,fontWeight:700,textTransform:"uppercase",letterSpacing:.5}},c)))),
+    h("thead",null,h("tr",null,head.map((c,i)=>h("th",{key:i,style:{textAlign:i===0?"left":"right",padding:"9px 12px",fontSize:11,background:T.tHd||T.aLt,color:T.hd||T.mut,fontWeight:700,textTransform:"uppercase",letterSpacing:.5}},c)))),
     h("tbody",null,rows)
+  );
+  const KPI=(k,v,s,c)=>h(Card,{style:{padding:14,position:"relative"}},
+    h("div",{style:{position:"absolute",top:15,right:14,width:8,height:8,borderRadius:"50%",background:c}}),
+    h("div",{style:{fontSize:10,textTransform:"uppercase",letterSpacing:.7,color:T.mut,fontWeight:700,marginBottom:5}},k),
+    h("div",{className:"num",style:{fontSize:20,fontWeight:800,color:T.txt}},v),
+    s&&h("div",{style:{fontSize:11,color:T.mut,marginTop:2}},s)
   );
 
   return h("div",null,
@@ -1025,220 +1070,136 @@ function PropertyDetailRich({property:p,onBack}){
     h("h2",{className:"serif",style:{fontSize:28,fontWeight:800,color:T.txt,marginBottom:4}},p.name),
     h("div",{style:{fontSize:13,color:T.mut,marginBottom:4}},p.address),
     h("div",{style:{display:"flex",flexWrap:"wrap",gap:14,fontSize:12.5,color:T.mut,marginBottom:20}},
-      p.status_label&&h("span",{style:{background:T.tHd,color:T.hd,padding:"2px 10px",borderRadius:99,fontWeight:600}},p.status_label),
+      p.status_label&&h("span",{style:{background:T.aLt,color:T.acc,padding:"2px 10px",borderRadius:99,fontWeight:600}},p.status_label),
       p.unit&&h("span",null,h("b",null,"Einheit: "),p.unit),
       p.miteigentumsanteil&&h("span",null,h("b",null,"MEA: "),p.miteigentumsanteil),
       p.owner&&h("span",null,h("b",null,"Eigentümerin: "),p.owner),
       p.verwaltung&&h("span",null,h("b",null,"Verwaltung: "),p.verwaltung)
     ),
-    // KPIs
-    h("div",{style:{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:10}},
-      [
-        ["Kaufpreis",eur(+p.kaufpreis)],
-        ["Inversión total",eur(+p.inversion_total)],
-        [`Saldo crédito (${p.saldo_fecha||''})`,eur(loans.reduce((s,l)=>s+(+l.saldo||0),0))],
-        ["Renta actual",rentaActual?eur(rentaActual)+" /mes":"—"],
-      ].map(([k,v],i)=>h(Card,{key:i,style:{padding:14}},
-        h("div",{style:{fontSize:10,textTransform:"uppercase",letterSpacing:.7,color:T.mut,fontWeight:700,marginBottom:5}},k),
-        h("div",{className:"num",style:{fontSize:17,fontWeight:800,color:T.txt}},v)
-      ))
+    // KPIs v2
+    h("div",{style:{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:6}},
+      KPI("Renta actual",rentaActual?eur0(rentaActual):"—",tAct?("Warmmiete · hasta "+(tAct.end_date||"")):"vacante",T.ok),
+      KPI("Resultado del mes",eur(mesNeto),mesNombre.charAt(0).toUpperCase()+mesNombre.slice(1),T.txt),
+      KPI("Saldo crédito",eur0(saldoTot),p.saldo_fecha?("Actualizado "+p.saldo_fecha):(loans.length+" Darlehen"),T.blue),
+      KPI("Cuota / mes",eur(totalRate),"Kapitaldienst",T.acc)
     ),
 
-
-    // P&L Section (auto-calculated from loan + vorschuss + grundsteuer + renta activa)
-    h(Section,{no:"00",title:"P&L mensual · "+new Date().toLocaleDateString("es-ES",{month:"long",year:"numeric"})},
-      h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}},
-        // Ingresos
-        h(Card,null,
-          h("div",{style:{fontSize:12,fontWeight:700,color:T.ok,textTransform:"uppercase",marginBottom:10}},"📈 Ingresos"),
-          (()=>{
-            const tAct=tenants.find(t=>t.activo);
-            const renta=tAct?+tAct.renta:0;
-            return renta>0
-              ?h(DL,{pairs:[["Renta mensual",eur(renta)+(tAct.renta_cur==="MXN"?" MXN":"")],["Total ingresos","→ "+eur(renta)]]})
-              :h("div",{style:{fontSize:13,color:T.mut,padding:"8px 0"}},"Sin inquilino activo");
-          })()
+    // 01 Cashflow real por concepto
+    cashflow.length>0&&h(Section,{no:"01",title:"Cashflow real · Lupa",hint:"en vivo · "+cashflow.length+" mov."},
+      h(Card,null,
+        h("div",{style:{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:14}},
+          [["Ingresos",eur0(cfIng),T.ok],["Gastos",eur0(cfGas),T.err],["Neto operativo",eur0(cfIng+cfGas),(cfIng+cfGas)>=0?T.ok:T.err],["Depósitos",eur0(cfDep),T.mut]].map((x,i)=>h("div",{key:i,style:{border:`1px solid ${T.brd}`,borderRadius:11,padding:"11px 13px",background:T.bg}},
+            h("div",{style:{fontSize:10,textTransform:"uppercase",letterSpacing:.6,color:T.mut,fontWeight:700,marginBottom:4}},x[0]),
+            h("div",{className:"num",style:{fontSize:17,fontWeight:800,color:x[2]}},x[1])))
         ),
-        // Gastos
-        h(Card,null,
-          h("div",{style:{fontSize:12,fontWeight:700,color:T.err,textTransform:"uppercase",marginBottom:10}},"📉 Gastos recurrentes"),
-          (()=>{
-            const hipoteca=loans.reduce((s,l)=>s+(+l.rate_monthly||0),0);
-            const currYear=new Date().getFullYear();
-            const currVorschuss=vorschuss.find(v=>v.jahr===currYear)||vorschuss[vorschuss.length-1];
-            const hausgeld=currVorschuss?+currVorschuss.mes:0;
-            const currGrundsteuer=grundsteuer.find(g=>g.jahr===currYear)||grundsteuer[grundsteuer.length-1];
-            const grundsteuerMonth=currGrundsteuer?(+currGrundsteuer.betrag/12):0;
-            const total=hipoteca+hausgeld+grundsteuerMonth;
-            const tAct=tenants.find(t=>t.activo);
-            const renta=tAct?+tAct.renta:0;
-            const resultado=renta-total;
-            const pairs=[
-              hipoteca>0&&["Hipoteca/crédito",`− ${eur(hipoteca)}`],
-              hausgeld>0&&["Hausgeld ("+currYear+")",`− ${eur(hausgeld)}`],
-              grundsteuerMonth>0&&["Grundsteuer/12",`− ${eur(grundsteuerMonth)}`],
-            ].filter(Boolean);
-            return h("div",null,
-              h(DL,{pairs:[...pairs,["Total gastos","→ − "+eur(total)]]}),
-              renta>0&&h("div",{style:{marginTop:10,padding:"8px 12px",borderRadius:8,
-                background:resultado>=0?"#E8F0DC":"#FBEDEA",
-                border:`1px solid ${resultado>=0?"#B8D48A":"#F0CFC8"}`}},
-                h("div",{style:{fontSize:12,fontWeight:700,color:resultado>=0?T.ok:T.err}},"Resultado neto mes"),
-                h("div",{className:"num",style:{fontSize:18,fontWeight:800,color:resultado>=0?T.ok:T.err}},
-                  (resultado>=0?"+ ":"− ")+eur(Math.abs(resultado)))
-              )
-            );
-          })()
-        )
-      )
-    ),
-    // 01 Compra
-    h(Section,{no:"01",title:"Datos de compra"},
-      h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}},
-        h(Card,null,h("div",{style:{fontSize:12,fontWeight:700,color:T.mut,textTransform:"uppercase",marginBottom:10}},"Adquisición"),
-          h(DL,{pairs:[["Kaufvertrag",p.kauf_kaufvertrag||"—"],["Besitzübergang",p.kauf_besitzuebergang||"—"],["Schlüsselübergabe",p.kauf_schluessel||"—"],["Verkäufer",p.kauf_verkaeufer||"—"]]})),
-        h(Card,null,h("div",{style:{fontSize:12,fontWeight:700,color:T.mut,textTransform:"uppercase",marginBottom:10}},"Inversión"),
-          h(DL,{pairs:[["Kaufpreis",eur(+p.kaufpreis)],["Nebenkosten",eur(+p.kauf_nebenkosten)],["Total",eur(+p.inversion_total)]]}))
+        h("table",{style:{width:"100%",borderCollapse:"collapse",fontSize:13}},
+          h("thead",null,h("tr",null,["Concepto","Fecha",mesNombre.charAt(0).toUpperCase()+mesNombre.slice(1),"Año "+curY].map((c,i)=>h("th",{key:i,style:{textAlign:i===0?"left":"right",padding:"8px 10px",fontSize:10,color:T.mut,fontWeight:700,textTransform:"uppercase",letterSpacing:.5,borderBottom:`1px solid ${T.brd}`}},c)))),
+          h("tbody",null,
+            concepts.map((o,i)=>{
+              const pend=!o.hasMes&&!o.once&&o.anio!==0;
+              const mesCell=o.once?h("span",{style:{color:T.mut,fontSize:11.5}},"puntual"):(pend?h("span",{style:{color:T.wrn,fontWeight:700,fontSize:11.5}},"pendiente"):h("span",{className:"num",style:{fontWeight:700,color:o.mes>=0?T.ok:T.err}},o.hasMes?eur(o.mes):"—"));
+              const fch=pend?h("span",{style:{color:T.wrn,fontSize:11.5}},"— falta cargo"):h("span",{className:"num",style:{color:T.mut,fontSize:12}},o.hasMes?fmtF(o.fechaMes):"—");
+              return h("tr",{key:i},
+                h("td",{style:{padding:"9px 10px",borderBottom:`1px solid ${T.bg}`,fontWeight:600}},h("span",{style:{display:"inline-block",width:8,height:8,borderRadius:"50%",background:o.dot,marginRight:8}}),o.c),
+                h("td",{style:{padding:"9px 10px",borderBottom:`1px solid ${T.bg}`,textAlign:"right"}},fch),
+                h("td",{style:{padding:"9px 10px",borderBottom:`1px solid ${T.bg}`,textAlign:"right"}},mesCell),
+                h("td",{className:"num",style:{padding:"9px 10px",borderBottom:`1px solid ${T.bg}`,textAlign:"right",fontWeight:700,color:o.once?T.blue:(o.anio>=0?T.ok:T.err)}},eur(o.anio))
+              );
+            }),
+            h("tr",{key:"tot"},
+              h("td",{style:{padding:"11px 10px",borderTop:`2px solid ${T.brd}`,fontWeight:800}},"Resultado"),
+              h("td",{style:{borderTop:`2px solid ${T.brd}`}}),
+              h("td",{className:"num",style:{padding:"11px 10px",borderTop:`2px solid ${T.brd}`,textAlign:"right",fontWeight:800,color:mesNeto>=0?T.ok:T.err}},eur(mesNeto)),
+              h("td",{className:"num",style:{padding:"11px 10px",borderTop:`2px solid ${T.brd}`,textAlign:"right",fontWeight:800,color:anioNeto>=0?T.ok:T.err}},eur(anioNeto))
+            )
+          )
+        ),
+        h("div",{style:{fontSize:11.5,color:T.mut,marginTop:8}},"Mes en curso: los cargos que aún no debitan aparecen como “pendiente”.")
       )
     ),
 
     // 02 Financiación
-    loans.length>0&&h(Section,{no:"02",title:"Financiación",hint:loans.map(l=>l.zins_pct+"%").join(" / ")},
-      h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}},
-        h(Card,null,h("div",{style:{fontSize:12,fontWeight:700,color:T.mut,textTransform:"uppercase",marginBottom:10}},"Condiciones"),
-          loans.map((l,i)=>h(DL,{key:i,pairs:[["Banco",l.bank],["Darlehensbetrag",eur(+l.ursprung)],["Financiación",l.grad||"—"],["Sollzinssatz",l.zins_pct+"%"],["Cuota mensual",eur(+l.rate_monthly)],["Plazo",l.laufzeit||"—"],["Zinsbindung",l.zinsbindung||"—"],["Auszahlung",l.auszahlung||"—"]]}))),
-        balances.length>0&&h(Card,null,h("div",{style:{fontSize:12,fontWeight:700,color:T.mut,textTransform:"uppercase",marginBottom:10}},"Evolución del saldo"),
-          h(Tbl,{head:["Jahr","Zinsen","Tilgung","Saldo"],rows:balances.map((b,i)=>h("tr",{key:i,style:{background:i%2?T.card:T.bg}},
-            h("td",{className:"num",style:{padding:"7px 10px"}},b.jahr),
-            h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right"}},eur(b.zinsen)),
-            h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right"}},eur(b.tilgung)),
-            h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right",fontWeight:700}},eur(b.saldo))
-          ))}))
+    loans.length>0&&h(Section,{no:"02",title:"Financiación",hint:(p.saldo_fecha?("Saldo al "+p.saldo_fecha+" · "):"")+loans.map(l=>l.zins_pct+"%").join(" / ")},
+      h("div",{style:{display:"grid",gridTemplateColumns:loans.length>1?"1fr 1fr":"1fr",gap:14}},
+        loans.map((l,i)=>h(Card,{key:i},
+          h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:10}},
+            h("span",{style:{fontWeight:700,fontSize:15,color:T.acc}},l.bank),
+            h("span",{className:"num",style:{fontWeight:800,fontSize:18}},eur(l.saldo))),
+          h(DL,{pairs:[["Darlehensbetrag",eur(+l.ursprung)],["Sollzinssatz",l.zins_pct+"%"],["Cuota mensual",eur(+l.rate_monthly)],["Zinsbindung",l.zinsbindung||"—"],["Kreditlaufzeit",l.laufzeit||"—"],p.saldo_fecha&&["Saldo al",p.saldo_fecha]].filter(Boolean)})
+        ))
       )
     ),
 
     // 03 Inquilinos
     tenants.length>0&&h(Section,{no:"03",title:"Inquilinos",hint:"Histórico completo"},
-      tenants.map((t,i)=>h("div",{key:i,style:{background:t.activo?"#FAFCF5":"#fff",border:`1px solid ${T.brd}`,borderLeft:`4px solid ${t.activo?T.ok:T.brd}`,borderRadius:10,padding:"13px 15px",marginBottom:10}},
-        h("div",{style:{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:6}},
-          h("span",{style:{fontWeight:700,fontSize:15,color:T.acc}},t.name+(t.activo?" ":"")),
-          h("span",{className:"num",style:{fontSize:12,color:T.mut}},(t.start_date||"")+" → "+(t.end_date||"?"))
-        ),
-        h("div",{style:{display:"flex",flexWrap:"wrap",gap:"6px 16px",marginTop:9,fontSize:12.5}},
-          t.renta&&h("span",null,h("b",{style:{color:T.mut,fontWeight:500}},"Renta: "),h("b",{style:{color:T.acc}},eur(+t.renta)),"/mes ",
-            t.tipo&&h("span",{style:{fontSize:10.5,fontWeight:700,padding:"2px 8px",borderRadius:99,background:t.tipo==='Warmmiete'?'#F3E6CF':'#DCEAC9',color:t.tipo==='Warmmiete'?'#8a6314':T.acc}},t.tipo)),
-          t.desglose&&h("span",null,h("b",{style:{color:T.mut,fontWeight:500}},"Desglose: "),t.desglose),
-          t.personas&&h("span",null,h("b",{style:{color:T.mut,fontWeight:500}},"Personas: "),t.personas),
-          t.kaution&&h("span",null,h("b",{style:{color:T.mut,fontWeight:500}},"Kaution: "),eur(+t.kaution)),
-          t.vermieter&&h("span",null,h("b",{style:{color:T.mut,fontWeight:500}},"Vermieter: "),t.vermieter+(t.iban?" ("+t.iban+")":"")),
-          t.strom&&h("span",null,h("b",{style:{color:T.mut,fontWeight:500}},"Strom: "),t.strom)
-        ),
-        t.notes&&h("div",{style:{marginTop:8,fontSize:11.5,color:T.wrn,background:"#FBF6EC",borderRadius:6,padding:"5px 9px"}},"⚠ "+t.notes)
+      tenants.map((t,i)=>h("div",{key:i,style:{background:t.activo?T.oLt:T.card,border:`1px solid ${T.brd}`,borderLeft:`4px solid ${t.activo?T.ok:T.brd}`,borderRadius:10,padding:"13px 15px",marginBottom:10,display:"flex",flexWrap:"wrap",gap:"6px 14px",alignItems:"center"}},
+        h("span",{style:{fontSize:10.5,fontWeight:700,padding:"2px 8px",borderRadius:99,background:t.activo?T.oLt:T.bg,color:t.activo?T.ok:T.mut,border:`1px solid ${t.activo?T.ok:T.brd}`}},t.activo?"ACTUAL":"—"),
+        h("span",{style:{fontWeight:700,fontSize:15,color:T.acc}},t.name),
+        h("span",{className:"num",style:{fontSize:12,color:T.mut}},(t.start_date||"")+" → "+(t.end_date||"?")),
+        h("span",{style:{fontSize:12.5,color:T.mut}},[t.tipo,t.renta?eur0(+t.renta):null,t.personas?t.personas+" Pers.":null].filter(Boolean).join(" · ")),
+        (!t.activo&&+t.kaution>0)?h("span",{style:{marginLeft:"auto",textAlign:"right",color:T.err,fontWeight:700,fontSize:12.5}},eur0(+t.kaution),h("span",{style:{display:"block",fontSize:10,textTransform:"uppercase",letterSpacing:.4,opacity:.85}},"Pendiente devolución"))
+          :(t.activo&&+t.kaution>0?h("span",{style:{marginLeft:"auto",fontSize:12,color:T.mut}},"Kaution "+eur0(+t.kaution)):null),
+        t.notes&&h("div",{style:{flexBasis:"100%",marginTop:4,fontSize:11.5,color:T.wrn,background:T.wLt,borderRadius:6,padding:"5px 9px"}},"⚠ "+t.notes)
       ))
     ),
 
-    // 04 WEG / Nebenkosten
-    weg.length>0&&h(Section,{no:"04",title:"Nebenkosten · WEG-Jahresabrechnung",hint:"Ihr Anteil · "+(p.verwaltung||"")},
-      h(Tbl,{head:["Jahr","umlagefähig","davon Heiz-WW","nicht uml.","Rücklage","Abr.summe","Vorschuss","Ergebnis"],
-        rows:weg.map((r,i)=>h("tr",{key:i,style:{background:i%2?T.card:T.bg}},
-          h("td",{className:"num",style:{padding:"7px 10px"}},r.jahr),
-          h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right"}},eur(r.umlagef)),
-          h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right"}},eur(r.heiz_ww)),
-          h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right"}},eur(r.nicht_uml)),
-          h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right"}},eur(r.ruecklage)),
-          h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right"}},eur(r.summe)),
-          h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right"}},eur(r.vorschuss)),
-          h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right",fontWeight:700,color:r.ergebnis>=0?T.ok:T.err}},eur(r.ergebnis)+" ",h("div",{style:{fontSize:10,fontWeight:500}},r.tipo))
-        ))}),
-      nkDetail.length>0&&h("div",{style:{marginTop:16}},
-        h("div",{style:{fontSize:12,color:T.mut,marginBottom:8}},"Principales partidas (Ihr Anteil) — variación año a año:"),
-        h(Tbl,{head:["Position",String(nkDetail[0].jahr_prev),String(nkDetail[0].jahr_curr),"Δ"],
-          rows:nkDetail.map((r,i)=>{const d=r.y_curr-r.y_prev;return h("tr",{key:i,style:{background:i%2?T.card:T.bg}},
-            h("td",{style:{padding:"7px 10px"}},r.pos),
-            h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right"}},eur(r.y_prev)),
-            h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right"}},eur(r.y_curr)),
-            h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right",fontWeight:700,color:d>=0?T.err:T.ok}},(d>=0?"+":"")+eur(d))
-          );})})
-      )
-    ),
-
-    // 05 Vorschuss
-    vorschuss.length>0&&h(Section,{no:"05",title:"Cuota mensual a "+(p.verwaltung||"Verwaltung"),hint:"Wirtschaftsplan · Vorschuss"},
-      h(Tbl,{head:["Wirtschaftsplan","Vorschuss/mes","Δ vs. año anterior"],
-        rows:vorschuss.map((r,i)=>{const prev=i>0?vorschuss[i-1].mes:null;const d=prev?r.mes-prev:null;
-          return h("tr",{key:i,style:{background:i%2?T.card:T.bg}},
+    // 04 WEG + Grundsteuer + Verwaltung
+    (weg.length>0||grundsteuer.length>0||vorschuss.length>0)&&h(Section,{no:"04",title:"WEG-Jahresabrechnung & Verwaltung",hint:(p.verwaltung||"")+((vorschuss.length?(" · Vorschuss "+eur0(+ (vorschuss[vorschuss.length-1].mes))+"/mes"):""))},
+      h(Card,null,
+        weg.length>0&&h(Tbl,{head:["Jahr","umlagef.","nicht uml.","Rücklage","Vorschuss","Ergebnis"],
+          rows:weg.map((r,i)=>h("tr",{key:i,style:{background:i%2?T.card:T.bg}},
             h("td",{className:"num",style:{padding:"7px 10px"}},r.jahr),
-            h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right"}},eur(r.mes)),
-            h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right",color:d>0?T.err:d<0?T.ok:T.mut}},d==null?"—":(d>0?"+":"")+eur(d))
-          );})})
-    ),
-
-    // 06 Strom + Grundsteuer
-    (strom||grundsteuer.length>0)&&h(Section,{no:"06",title:"Strom & Grundsteuer"},
-      h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}},
-        strom&&h(Card,null,h("div",{style:{fontSize:12,fontWeight:700,color:T.mut,textTransform:"uppercase",marginBottom:10}},"Strom · "+strom.proveedor),
-          h(DL,{pairs:[["Kundennr.",strom.kundennr],["Titular",strom.titular]]}),
-          stromEntries.map((e,i)=>h("div",{key:i,style:{display:"flex",justifyContent:"space-between",padding:"6px 0",borderTop:`1px solid ${T.brd}`,fontSize:13}},
-            h("span",{style:{color:T.mut}},e.periodo),h("span",{style:{fontWeight:500}},e.detalle)))
-        ),
-        grundsteuer.length>0&&h(Card,null,h("div",{style:{fontSize:12,fontWeight:700,color:T.mut,textTransform:"uppercase",marginBottom:10}},"Grundsteuer"),
-          h(DL,{pairs:grundsteuer.map(r=>[String(r.jahr),eur(r.betrag)])}))
+            h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right"}},eur(r.umlagef)),
+            h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right"}},eur(r.nicht_uml)),
+            h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right"}},eur(r.ruecklage)),
+            h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right"}},eur(r.vorschuss)),
+            h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right",fontWeight:700,color:r.ergebnis>=0?T.ok:T.err}},eur(r.ergebnis)+" ",h("span",{style:{fontSize:10,color:T.mut}},r.tipo||""))
+          ))}),
+        grundsteuer.length>0&&h("div",{style:{marginTop:weg.length?16:0}},
+          h(Tbl,{head:["Grundsteuer B","Betrag"],rows:grundsteuer.map((r,i)=>h("tr",{key:i,style:{background:i%2?T.card:T.bg}},
+            h("td",{className:"num",style:{padding:"7px 10px"}},r.jahr),
+            h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right"}},eur(r.betrag))))}))
       )
     ),
 
-    // 07 Setup
-    setup.length>0&&h(Section,{no:"07",title:"Adecuación & amueblado",hint:"Setup-Kosten"},
-      h(Tbl,{head:["Concepto","Betrag"],rows:[
-        ...setup.map((r,i)=>h("tr",{key:i,style:{background:i%2?T.card:T.bg}},
-          h("td",{style:{padding:"7px 10px"}},r.item),
-          h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right"}},eur(r.betrag)))),
-        h("tr",{key:"tot",style:{background:T.tHd}},
-          h("td",{style:{padding:"7px 10px",fontWeight:800}},"Total"),
-          h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right",fontWeight:800}},eur(setup.reduce((s,r)=>s+(+r.betrag||0),0))))
-      ]})
+    // 05 Proveedores
+    (strom||stromEntries.length>0)&&h(Section,{no:"05",title:"Proveedores",hint:"contratos del depa"},
+      h(Card,null,
+        strom&&h("div",{style:{display:"flex",justifyContent:"space-between",padding:"10px 0",borderBottom:`1px solid ${T.brd}`}},
+          h("div",null,h("span",{style:{fontWeight:700}},"Strom"),h("span",{style:{color:T.mut}}," · "+(strom.proveedor||"")),h("div",{style:{fontSize:12,color:T.mut}},[strom.kundennr&&("Kundennr. "+strom.kundennr),strom.titular&&("Titular: "+strom.titular)].filter(Boolean).join(" · "))),
+          h("div",{style:{fontSize:12,color:T.mut}},"laufend")),
+        stromEntries.map((e,i)=>h("div",{key:i,style:{display:"flex",justifyContent:"space-between",padding:"8px 0",borderBottom:i<stromEntries.length-1?`1px solid ${T.brd}`:"none",fontSize:13}},
+          h("span",{style:{color:T.mut}},e.periodo),h("span",{style:{fontWeight:500}},e.detalle)))
+      )
+    ),
+
+    // 06 Adecuación & inversión (reforma + mobiliario)
+    setup.length>0&&h(Section,{no:"06",title:"Adecuación & inversión",hint:"Reforma + Mobiliario"},
+      h(Card,null,
+        (()=>{const mx=Math.max(...setup.map(s=>+s.betrag||0),1);
+          return setup.slice().sort((a,b)=>b.betrag-a.betrag).map((s,i)=>h("div",{key:i,style:{display:"flex",alignItems:"center",gap:12,margin:"7px 0",fontSize:13}},
+            h("span",{style:{width:"48%",color:T.txt}},s.item),
+            h("span",{style:{flex:1,height:9,background:T.bg,borderRadius:99,overflow:"hidden"}},h("span",{style:{display:"block",height:"100%",width:(+s.betrag/mx*100).toFixed(1)+"%",background:`linear-gradient(90deg,#C77A46,${T.acc})`,borderRadius:99}})),
+            h("span",{className:"num",style:{width:90,textAlign:"right",fontWeight:700}},eur0(s.betrag))
+          ));})(),
+        h("div",{style:{display:"flex",justifyContent:"space-between",borderTop:`1px solid ${T.brd}`,marginTop:8,paddingTop:9}},
+          h("span",{style:{fontWeight:800}},"Total inversión"),
+          h("span",{className:"num",style:{fontWeight:800}},eur0(setup.reduce((s,r)=>s+(+r.betrag||0),0))))
+      )
+    ),
+
+    // 07 Datos de compra
+    h(Section,{no:"07",title:"Datos de compra"},
+      h(Card,null,h(DL,{pairs:[["Kaufvertrag",p.kauf_kaufvertrag||"—"],["Besitzübergang",p.kauf_besitzuebergang||"—"],["Verkäufer",p.kauf_verkaeufer||"—"],["Kaufpreis / Finanz.",eur0(+p.kaufpreis)],["Inversión total",eur0(+p.inversion_total)]]}))
     ),
 
     // 08 Alertas
     alerts.length>0&&h(Section,{no:"08",title:"Alertas & pendientes"},
       alerts.map((a,i)=>h("div",{key:i,style:{display:"flex",gap:11,padding:"12px 14px",borderRadius:10,marginBottom:9,fontSize:13,
-        background:a.nivel==='r'?"#FBEDEA":"#FBF6EC",border:`1px solid ${a.nivel==='r'?"#F0CFC8":"#EBDCBE"}`}},
+        background:a.nivel==='r'?T.eLt:T.wLt,border:`1px solid ${a.nivel==='r'?"#EEC9C4":"#EBDCBE"}`}},
         h("span",{style:{fontWeight:800,color:a.nivel==='r'?T.err:T.wrn}},a.nivel==='r'?"!":"•"),
         h("div",null,h("b",{style:{display:"block",color:T.acc,marginBottom:2}},a.titulo),a.detalle)
       ))
-    ),
-
-    // 09 Cashflow real (Lupa) - en vivo desde v_property_cashflow
-    cashflow.length>0&&h(Section,{no:"09",title:"Cashflow real \u00b7 Lupa",hint:"en vivo \u00b7 "+cashflow.length+" movimientos"},
-      (()=>{
-        const op=cashflow.filter(r=>r.flujo_tipo==='ingreso'||r.flujo_tipo==='gasto');
-        const ing=op.filter(r=>r.flujo_tipo==='ingreso').reduce((s,r)=>s+(+r.importe_eur||0),0);
-        const gas=op.filter(r=>r.flujo_tipo==='gasto').reduce((s,r)=>s+(+r.importe_eur||0),0);
-        const dep=cashflow.filter(r=>r.flujo_tipo==='deposito').reduce((s,r)=>s+(+r.importe_eur||0),0);
-        const byM={};
-        op.forEach(r=>{const m=(r.fecha||'').slice(0,7);if(!m)return;if(!byM[m])byM[m]={ing:0,gas:0};byM[m][r.flujo_tipo==='ingreso'?'ing':'gas']+=(+r.importe_eur||0);});
-        const meses=Object.keys(byM).sort().reverse().slice(0,12);
-        return h("div",null,
-          h("div",{style:{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:14}},
-            [["Ingresos (total)",eur(ing),T.ok],["Gastos (total)",eur(gas),T.err],["Resultado operativo",eur(ing+gas),(ing+gas)>=0?T.ok:T.err],["Dep\u00f3sitos (Kaution)",eur(dep),T.mut]].map((x,i)=>h(Card,{key:i,style:{padding:14}},
-              h("div",{style:{fontSize:10,textTransform:"uppercase",letterSpacing:.7,color:T.mut,fontWeight:700,marginBottom:5}},x[0]),
-              h("div",{className:"num",style:{fontSize:16,fontWeight:800,color:x[2]}},x[1])
-            ))
-          ),
-          h(Tbl,{head:["Mes","Ingresos","Gastos","Neto"],rows:meses.map((m,i)=>{const d=byM[m];const n=d.ing+d.gas;return h("tr",{key:i,style:{background:i%2?T.card:T.bg}},
-            h("td",{className:"num",style:{padding:"7px 10px"}},m),
-            h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right",color:T.ok}},eur(d.ing)),
-            h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right",color:T.err}},eur(d.gas)),
-            h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right",fontWeight:700,color:n>=0?T.ok:T.err}},eur(n))
-          );})}),
-          h("div",{style:{fontSize:12,color:T.mut,margin:"16px 0 8px"}},"\u00daltimos movimientos:"),
-          h(Tbl,{head:["Fecha","Concepto","Cuenta","Importe"],rows:cashflow.slice(0,15).map((r,i)=>h("tr",{key:i,style:{background:i%2?T.card:T.bg}},
-            h("td",{className:"num",style:{padding:"7px 10px",whiteSpace:"nowrap"}},r.fecha),
-            h("td",{style:{padding:"7px 10px"}},h("span",{style:{fontSize:10,padding:"1px 7px",borderRadius:99,marginRight:6,background:r.flujo_tipo==='ingreso'?"#E6F0DC":r.flujo_tipo==='gasto'?"#FBEDEA":r.flujo_tipo==='deposito'?"#EDE7F6":"#EEE",color:T.hd,fontWeight:600}},r.categoria||r.flujo_tipo),(r.payee||"").slice(0,42)),
-            h("td",{style:{padding:"7px 10px",fontSize:11,color:T.mut}},(r.cuenta||"").replace("JP \u00b7 ","")),
-            h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right",fontWeight:600,color:(+r.importe_eur)>=0?T.ok:T.err}},eur(+r.importe_eur))
-          ))})
-        );
-      })()
     )
   );
 }
