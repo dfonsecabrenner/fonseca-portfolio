@@ -271,8 +271,11 @@ const MODULES=[
   {id:"opos",icon:"⚖️",label:"Fonseca Kanzlei"},
 ];
 
-function Sidebar({mod,setMod,alerts,user,onSignOut}){
-  return h("aside",{style:{width:200,background:T.side,display:"flex",flexDirection:"column",flexShrink:0}},
+function Sidebar({mod,setMod,alerts,user,onSignOut,isMobile,menuOpen}){
+  const asStyle=isMobile
+    ?{width:236,background:T.side,display:"flex",flexDirection:"column",flexShrink:0,position:"fixed",top:0,left:0,height:"100vh",zIndex:200,transform:menuOpen?"translateX(0)":"translateX(-100%)",transition:"transform .25s ease",boxShadow:menuOpen?"0 0 40px rgba(0,0,0,.45)":"none"}
+    :{width:200,background:T.side,display:"flex",flexDirection:"column",flexShrink:0};
+  return h("aside",{style:asStyle},
     h("div",{style:{padding:"22px 16px 16px",borderBottom:`1px solid ${T.sDiv}`}},
       h("div",{className:"serif",style:{fontSize:19,fontWeight:700,color:"#FFF",lineHeight:1.15}},"Fonseca"),
       h("div",{className:"serif",style:{fontSize:19,fontStyle:"italic",color:T.sAct,lineHeight:1.15}},"Portfolio"),
@@ -1975,6 +1978,9 @@ function App(){
   const[reGastos,setReGastos]=useState(()=>store.load("re_g",[]));
   const[kClients,setKClients]=useState(()=>store.load("k_clients",K_CLIENTS_DEFAULT));
   const[kPos,setKPos]=useState(()=>store.load("k_pos",K_POSITIONS_DEFAULT));
+  const[vw,setVw]=useState(typeof window!=="undefined"?window.innerWidth:1200);
+  const[menuOpen,setMenuOpen]=useState(false);
+  useEffect(()=>{const f=()=>setVw(window.innerWidth);window.addEventListener("resize",f);return()=>window.removeEventListener("resize",f);},[]);
 
   useEffect(()=>{
     supabase.auth.getSession().then(({data:{session:s}})=>setSession(s));
@@ -2010,10 +2016,14 @@ function App(){
 
   // Logged in
   const alerts={re:pisos.reduce((s,p)=>s+(p.alertas||[]).filter(a=>a.includes("URGENTE")).length,0),opos:kPos.filter(o=>o.status==="rejected").length};
+  const isMobile=vw<820;
+  const setModC=(m)=>{setMod(m);setMenuOpen(false);};
   return h("div",{style:{display:"flex",height:"100vh",background:T.bg,overflow:"hidden"}},
-    h(Sidebar,{mod,setMod,alerts,user:session.user,onSignOut:()=>supabase.auth.signOut()}),
-    h("main",{style:{flex:1,overflow:"auto",padding:"22px 26px"}},
-      mod==="home"&&h(HomeDashboard,{pisos,rePagos,setMod}),
+    h(Sidebar,{mod,setMod:setModC,alerts,user:session.user,onSignOut:()=>supabase.auth.signOut(),isMobile,menuOpen}),
+    isMobile&&menuOpen&&h("div",{onClick:()=>setMenuOpen(false),style:{position:"fixed",inset:0,background:"rgba(10,15,12,.5)",zIndex:190}}),
+    isMobile&&h("button",{onClick:()=>setMenuOpen(o=>!o),style:{position:"fixed",top:12,left:12,zIndex:210,width:40,height:40,borderRadius:10,border:"none",background:T.side,color:"#fff",fontSize:18,cursor:"pointer",boxShadow:"0 2px 8px rgba(0,0,0,.25)"}},menuOpen?"✕":"☰"),
+    h("main",{style:{flex:1,overflow:"auto",padding:isMobile?"58px 14px 24px":"22px 26px"}},
+      mod==="home"&&h(HomeDashboard,{pisos,rePagos,setMod:setModC}),
       mod==="re"&&h(RealEstateModule,{pisos,setPisos,rePagos,setRePagos,reGastos,setReGastos}),
       mod==="portfolio"&&h(PortafolioModule,null),
       mod==="opos"&&h(KanzleiModule,{kClients,setKClients,kPos,setKPos})
