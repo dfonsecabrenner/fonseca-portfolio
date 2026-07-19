@@ -1082,7 +1082,7 @@ function PropertyDetailRich({property:p,onBack}){
       supabase.from('re_portfolio_grundsteuer').select('*').eq('property_id',p.id).order('jahr'),
       supabase.from('re_portfolio_setup').select('*').eq('property_id',p.id),
       supabase.from('re_portfolio_alerts').select('*').eq('property_id',p.id).order('sort_order'),
-      supabase.from('v_property_cashflow').select('fecha,cuenta,categoria,payee,importe_eur,flujo_tipo').eq('property_id',p.id).order('fecha',{ascending:false}),
+      supabase.from('v_property_cashflow').select('fecha,mes_contable,cuenta,categoria,payee,importe_eur,flujo_tipo').eq('property_id',p.id).order('fecha',{ascending:false}),
     ]).then(async([l,t,w,nk,v,s,se,g,su,al,cf])=>{
       setLoans(l.data||[]);
       setTenants((t.data||[]).slice().sort((a,b)=>{const k=s=>{const m=/^(\d{2})\.(\d{2})\.(\d{4})$/.exec(s||"");return m?+(m[3]+m[2]+m[1]):-1;};return k(b.start_date)-k(a.start_date);}));
@@ -1142,7 +1142,7 @@ function PropertyDetailRich({property:p,onBack}){
   };
   const opCF=cashflow.filter(r=>r.flujo_tipo==='ingreso'||r.flujo_tipo==='gasto');
   const cmap={};
-  opCF.forEach(r=>{const cl=classify(r);if(cl.skip)return;const mm=(r.fecha||'').slice(0,7),yy=(r.fecha||'').slice(0,4);
+  opCF.forEach(r=>{const cl=classify(r);if(cl.skip)return;const mc=r.mes_contable||r.fecha||'';const mm=mc.slice(0,7),yy=mc.slice(0,4);
     if(!cmap[cl.c])cmap[cl.c]={c:cl.c,dot:cl.dot,once:cl.once,mes:0,anio:0,fechaMes:null,hasMes:false};
     const o=cmap[cl.c]; if(yy===curY)o.anio+=(+r.importe_eur||0);
     if(mm===curMM){o.mes+=(+r.importe_eur||0);o.hasMes=true;if(!o.fechaMes||r.fecha>o.fechaMes)o.fechaMes=r.fecha;}});
@@ -1155,7 +1155,7 @@ function PropertyDetailRich({property:p,onBack}){
   const cfDep=cashflow.filter(r=>r.flujo_tipo==='deposito').reduce((s,r)=>s+(+r.importe_eur||0),0);
   const fmtF=f=>{const m=/^\d{4}-(\d{2})-(\d{2})/.exec(f||"");return m?m[2]+"."+m[1]:"—";};
   // monthly buckets for chart
-  const bm={};opCF.forEach(r=>{const m=(r.fecha||'').slice(0,7);if(!m)return;if(!bm[m])bm[m]={mm:m,ing:0,gas:0};bm[m][r.flujo_tipo==='ingreso'?'ing':'gas']+=(+r.importe_eur||0);});
+  const bm={};opCF.forEach(r=>{const m=(r.mes_contable||r.fecha||'').slice(0,7);if(!m)return;if(!bm[m])bm[m]={mm:m,ing:0,gas:0};bm[m][r.flujo_tipo==='ingreso'?'ing':'gas']+=(+r.importe_eur||0);});
   const CM=Object.values(bm).sort((a,b)=>a.mm<b.mm?-1:1);
 
   function cfChart(CMx){
