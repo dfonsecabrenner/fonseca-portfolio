@@ -17,6 +17,113 @@ button{cursor:pointer;}button:hover{opacity:.82;}
 input:focus,select:focus,textarea:focus{outline:none;border-color:#D4753A!important;box-shadow:0 0 0 3px rgba(184,92,44,.12)!important;}
 .serif{font-family:'Playfair Display',serif;}
 .num{font-variant-numeric:tabular-nums;}
+
+/* ===== pd2 (property detail v2) ===== */
+.pd2{--canvas:#F2F1EC;--card:#FFFFFF;--ink:#17231A;--ink2:#3B473D;--mut:#727C6F;--line:#E7E4DB;
+ --brand:#18271C;--clay:#B85C2C;
+ --inc:#2F7D53;--exp:#B23B3B;--fin:#2B4C8C;--dep:#7A5AAE;--gold:#8A6A1E;}
+.pd2 .muted{color:var(--mut)}
+.pd2 .head{background:linear-gradient(150deg,#18271C,#233A25 70%,#2C4A2E);border-radius:20px;padding:26px 28px;color:#EAF1E6;position:relative;overflow:hidden;box-shadow:0 18px 40px -22px rgba(24,39,28,.55)}
+.pd2 .head:after{content:"";position:absolute;right:-60px;top:-60px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(184,92,44,.22),transparent 70%)}
+.pd2 .head .eye{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#9DBBA0;font-weight:600}
+.pd2 .head h1{font-size:34px;line-height:1.05;margin:8px 0 4px;font-weight:700}
+.pd2 .head .addr{color:#AEC6B0;font-size:13.5px}
+.pd2 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.pd2 .chip{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);padding:5px 11px;border-radius:99px;font-size:12px;color:#DCE7D8}
+.pd2 .chip b{color:#fff;font-weight:600}
+.pd2 .chip.st{background:var(--clay);border-color:transparent;color:#fff;font-weight:600}
+.pd2 .flag{position:absolute;right:26px;top:24px;text-align:right}
+.pd2 .flag .fg{font-size:26px}
+.pd2 .flag .u{font-size:12px;color:#AEC6B0;margin-top:2px}
+.pd2 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:16px}
+.pd2 .kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 17px;position:relative}
+.pd2 .kpi .k{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--mut);font-weight:700}
+.pd2 .kpi .v{font-size:24px;font-weight:800;margin-top:7px;letter-spacing:-.01em}
+.pd2 .kpi .s{font-size:11.5px;color:var(--mut);margin-top:3px}
+.pd2 .kpi .dot{position:absolute;top:17px;right:16px;width:8px;height:8px;border-radius:50%}
+.pd2 section{margin-top:26px}
+.pd2 .sh{display:flex;align-items:center;gap:12px;margin-bottom:13px}
+.pd2 .sh .no{font-family:'Playfair Display',serif;font-size:13px;color:var(--clay);font-weight:700;width:26px}
+.pd2 .sh h2{font-size:17px;font-weight:700;letter-spacing:-.01em}
+.pd2 .sh .hint{margin-left:auto;font-size:12px;color:var(--mut)}
+.pd2 .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px}
+.pd2 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pd2 .cf-top{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:6px}
+.pd2 .stat{border:1px solid var(--line);border-radius:13px;padding:13px 14px;background:#FCFCFA}
+.pd2 .stat .k{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--mut);font-weight:700;display:flex;align-items:center;gap:6px}
+.pd2 .stat .k i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.pd2 .stat .v{font-size:20px;font-weight:800;margin-top:6px}
+.pd2 .legend{display:flex;gap:16px;align-items:center;font-size:11.5px;color:var(--mut);margin:2px 0 10px}
+.pd2 .legend i{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:5px;vertical-align:-1px}
+.pd2 .legend .ln{width:16px;height:2px;border-radius:2px;background:var(--ink);display:inline-block;margin-right:5px;vertical-align:3px}
+.pd2 .bar:hover{opacity:.78;cursor:default}
+.pd2 .cft th{text-align:right;padding:8px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);font-weight:700;border-bottom:1px solid var(--line)}
+.pd2 .cft th:first-child{text-align:left}
+.pd2 .cft td{padding:9px 10px;border-bottom:1px solid #F1EFE8}
+.pd2 .cft td:first-child{text-align:left;font-weight:600}
+.pd2 .cft td:not(:first-child){text-align:right}
+.pd2 .cft .fch{color:var(--mut);font-size:12px}
+.pd2 .cft .pos{color:var(--inc);font-weight:700}
+.pd2 .cft .neg{color:var(--exp);font-weight:700}
+.pd2 .cft .pend{color:var(--gold);font-weight:700;font-size:11.5px}
+.pd2 .cft .once{color:var(--dep);font-weight:700}
+.pd2 .cft tr.tot td{border-top:2px solid var(--line);border-bottom:none;font-weight:800;font-size:14px;padding-top:11px}
+.pd2 .cft tr.tot td:first-child{color:var(--ink)}
+.pd2 .dotc{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:7px;vertical-align:0}
+.pd2 .tl{position:relative;padding:6px 0 2px}
+.pd2 .tl .track{height:8px;background:#EFEDE6;border-radius:99px;position:relative;margin:26px 0 8px}
+.pd2 .seg{position:absolute;height:8px;border-radius:99px;top:0}
+.pd2 .tcard{border:1px solid var(--line);border-radius:13px;padding:12px 14px;background:#FCFCFA;margin-top:10px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.pd2 .tcard .nm{font-weight:700}
+.pd2 .tcard .dts{color:var(--mut);font-size:12px}
+.pd2 .tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px}
+.pd2 .tag.live{background:#E6F1EA;color:var(--inc)}
+.pd2 .tag.past{background:#EFEDE6;color:var(--mut)}
+.pd2 .kpend{margin-left:auto;text-align:right;color:var(--exp);font-weight:700;font-size:12px;line-height:1.25}
+.pd2 .kpend small{display:block;color:var(--exp);opacity:.8;font-weight:600;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em}
+.pd2 .kv{display:grid;grid-template-columns:1fr auto;gap:0}
+.pd2 .kv>div{padding:8px 2px;border-bottom:1px solid var(--line);font-size:13px}
+.pd2 .kv .lab{color:var(--mut)}
+.pd2 .kv .val{text-align:right;font-weight:600}
+.pd2 table.t{width:100%;border-collapse:collapse;font-size:12.5px}
+.pd2 table.t th{text-align:right;padding:9px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);font-weight:700;border-bottom:1px solid var(--line)}
+.pd2 table.t th:first-child{text-align:left}
+.pd2 table.t td{padding:9px 10px;border-bottom:1px solid #F1EFE8}
+.pd2 table.t td:not(:first-child){text-align:right}
+.pd2 table.t tr:last-child td{border-bottom:none}
+.pd2 .loan{border:1px solid var(--line);border-radius:13px;padding:14px;background:#FCFCFA}
+.pd2 .loan .top{display:flex;justify-content:space-between;align-items:baseline}
+.pd2 .loan .bk{font-weight:700;font-size:15px}
+.pd2 .loan .sal{font-weight:800;font-size:18px}
+.pd2 .loan .mini{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin-top:10px;font-size:12px}
+.pd2 .loan .mini .l{color:var(--mut)}
+.pd2 .loan .mini .r{text-align:right;font-weight:600}
+.pd2 .pv{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--line);font-size:13px}
+.pd2 .pv:last-child{border-bottom:none}
+.pd2 .pv .t{font-weight:700}
+.pd2 .pv .d{color:var(--mut);font-size:12px}
+.pd2 .pv .amt{font-weight:700}
+.pd2 .sb{display:flex;align-items:center;gap:12px;margin:7px 0;font-size:13px}
+.pd2 .sb .lab{width:230px;color:var(--ink2)}
+.pd2 .sb .yr{font-size:10px;color:var(--mut);font-weight:600}
+.pd2 .sb .track{flex:1;height:9px;background:#EFEDE6;border-radius:99px;overflow:hidden}
+.pd2 .sb .fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#C77A46,#B85C2C)}
+.pd2 .sb .val{width:90px;text-align:right;font-weight:700}
+.pd2 .al{display:flex;gap:11px;padding:13px 15px;border-radius:13px;margin-bottom:9px;font-size:13px;line-height:1.45}
+.pd2 .al .ic{font-weight:800;font-size:13px;flex:none;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;color:#fff}
+.pd2 .al.r{background:#F7E9E7;border:1px solid #EAD2CE}
+.pd2 .al.r .ic{background:var(--exp)}
+.pd2 .al.y{background:#FBF4E4;border:1px solid #ECE0C4}
+.pd2 .al.y .ic{background:var(--gold)}
+.pd2 .al b{display:block;margin-bottom:2px}
+.pd2 .grid2{grid-template-columns:1fr}
+.pd2 .head h1{font-size:26px}
+.pd2 .sb .lab{width:150px}
+.pd2 .kpend{margin-left:0;text-align:left;width:100%}
+.pd2 .tbx{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.pd2 section{margin-top:22px}
+@media(max-width:820px){.pd2 .kpis, .pd2 .cf-top{grid-template-columns:1fr 1fr} .pd2 .grid2{grid-template-columns:1fr} .pd2 .head h1{font-size:26px} .pd2 .sb .lab{width:150px} .pd2 .kpend{margin-left:0;text-align:left;width:100%}}
+@media(max-width:560px){.pd2 .head{padding:20px 18px}.pd2 .head h1{font-size:23px}.pd2 .card{padding:15px}.pd2 .cft{font-size:12px}.pd2 .cft td,.pd2 .cft th{padding:7px 6px}.pd2 table.t{font-size:11.5px}.pd2 .loan .mini{grid-template-columns:1fr 1fr}.pd2 .sb .lab{width:130px;font-size:12px}.pd2 .flag{position:static;text-align:left;margin-bottom:6px}}
 </style>
 </head>
 <body>
@@ -989,218 +1096,181 @@ function PropertyDetailRich({property:p,onBack}){
     });
   },[p.id]);
 
-  const eur=(v,d=2)=>{
-    if(v===null||v===undefined||isNaN(v))return "—";
-    const neg=v<0; v=Math.abs(Number(v));
-    return (neg?"−":"")+v.toLocaleString("de-DE",{minimumFractionDigits:d,maximumFractionDigits:d})+" €";
-  };
-  const eur0=v=>eur(v,0);
-
   if(loading)return h("div",{style:{padding:40,textAlign:'center',color:T.mut}},"Cargando...");
+
+  const eur=(v,d=2)=>{if(v==null||isNaN(v))return "—";const n=v<0?"−":"";v=Math.abs(+v);return n+v.toLocaleString("de-DE",{minimumFractionDigits:d,maximumFractionDigits:d})+" €";};
+  const eur0=v=>eur(v,0);
+  const esc=s=>(s==null?"":String(s)).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  const FLAG={DE:"🇩🇪",NL:"🇳🇱",ES:"🇪🇸",MX:"🇲🇽"};
 
   const totalRate=loans.reduce((s,l)=>s+(+l.rate_monthly||0),0);
   const saldoTot=loans.reduce((s,l)=>s+(+l.saldo||0),0);
   const tAct=tenants.find(t=>t.activo);
   const rentaActual=tAct?+tAct.renta:null;
 
-  // ---- cashflow por concepto (mes en curso + año) ----
+  // ---- concept cashflow ----
   const now=new Date();
   const curMM=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
   const curY=String(now.getFullYear());
-  const mesNombre=now.toLocaleDateString("es-ES",{month:"long",year:"numeric"});
+  const mesN=now.toLocaleDateString("es-ES",{month:"long",year:"numeric"});
+  const mesLabel=mesN.charAt(0).toUpperCase()+mesN.slice(1);
   const classify=(r)=>{
     const s=((r.payee||"")+" "+(r.categoria||"")).toLowerCase();
-    if(r.flujo_tipo==='ingreso'){ if(s.includes('guth')||s.includes('abr.')||s.includes('erstatt'))return {c:"WEG Guthaben",dot:T.blue,once:true}; return {c:"Renta",dot:T.ok,pos:true}; }
-    if(s.includes('dz hyp')||s.includes('dzhyp'))return {c:"Hipoteca · DZ Hyp",dot:T.err};
-    if(s.includes('teilzahlung')||s.includes('darlehen')||s.includes('vr bank'))return {c:"Hipoteca · VR Bank",dot:T.err};
-    if(s.includes('hausgeld')||s.includes('felix')||s.includes('weg '))return {c:"Hausgeld (WEG)",dot:T.err};
-    if(s.includes('belkaw')||s.includes('strom'))return {c:"Strom",dot:T.err};
-    if(s.includes('netcologne')||s.includes('cologne')||s.includes('internet'))return {c:"Internet",dot:T.err};
-    if(s.includes('grundsteuer'))return {c:"Grundsteuer",dot:T.err};
-    if(s.includes('vermieterverein'))return {c:"Vermieterverein",dot:T.err};
-    if(r.flujo_tipo==='deposito')return {c:"Depósito (Kaution)",dot:T.mut,skip:true};
-    return {c:"Otros",dot:T.mut};
+    if(r.flujo_tipo==='ingreso'){ if(s.includes('guth')||s.includes('abr.')||s.includes('erstatt'))return {c:"WEG Guthaben",dot:"#7A5AAE",once:true}; return {c:"Renta",dot:"#2F7D53"}; }
+    if(s.includes('dz hyp')||s.includes('dzhyp'))return {c:"Hipoteca · DZ Hyp",dot:"#B23B3B"};
+    if(s.includes('teilzahlung')||s.includes('darlehen')||s.includes('vr bank'))return {c:"Hipoteca · VR Bank",dot:"#B23B3B"};
+    if(s.includes('hausgeld')||s.includes('felix')||s.includes('weg '))return {c:"Hausgeld (WEG)",dot:"#B23B3B"};
+    if(s.includes('belkaw')||s.includes('strom'))return {c:"Strom",dot:"#B23B3B"};
+    if(s.includes('netcologne')||s.includes('cologne')||s.includes('internet'))return {c:"Internet",dot:"#B23B3B"};
+    if(s.includes('grundsteuer'))return {c:"Grundsteuer",dot:"#B23B3B"};
+    if(s.includes('vermieterverein'))return {c:"Vermieterverein",dot:"#B23B3B"};
+    if(r.flujo_tipo==='deposito')return {c:"Depósito",dot:"#7A6E61",skip:true};
+    return {c:"Otros",dot:"#7A6E61"};
   };
   const opCF=cashflow.filter(r=>r.flujo_tipo==='ingreso'||r.flujo_tipo==='gasto');
-  const concMap={};
-  opCF.forEach(r=>{
-    const cl=classify(r); if(cl.skip)return;
-    const mm=(r.fecha||'').slice(0,7), yy=(r.fecha||'').slice(0,4);
-    if(!concMap[cl.c])concMap[cl.c]={c:cl.c,dot:cl.dot,pos:cl.pos,once:cl.once,mes:0,anio:0,fechaMes:null,hasMes:false};
-    const o=concMap[cl.c];
-    if(yy===curY)o.anio+=(+r.importe_eur||0);
-    if(mm===curMM){o.mes+=(+r.importe_eur||0);o.hasMes=true;if(!o.fechaMes||r.fecha>o.fechaMes)o.fechaMes=r.fecha;}
-  });
+  const cmap={};
+  opCF.forEach(r=>{const cl=classify(r);if(cl.skip)return;const mm=(r.fecha||'').slice(0,7),yy=(r.fecha||'').slice(0,4);
+    if(!cmap[cl.c])cmap[cl.c]={c:cl.c,dot:cl.dot,once:cl.once,mes:0,anio:0,fechaMes:null,hasMes:false};
+    const o=cmap[cl.c]; if(yy===curY)o.anio+=(+r.importe_eur||0);
+    if(mm===curMM){o.mes+=(+r.importe_eur||0);o.hasMes=true;if(!o.fechaMes||r.fecha>o.fechaMes)o.fechaMes=r.fecha;}});
   const orderC=["Renta","WEG Guthaben","Hipoteca · DZ Hyp","Hipoteca · VR Bank","Hausgeld (WEG)","Strom","Internet","Grundsteuer","Vermieterverein","Otros"];
-  const concepts=Object.values(concMap).filter(o=>o.anio!==0||o.hasMes).sort((a,b)=>{const ia=orderC.indexOf(a.c),ib=orderC.indexOf(b.c);return (ia<0?99:ia)-(ib<0?99:ib);});
+  const concepts=Object.values(cmap).filter(o=>o.anio!==0||o.hasMes).sort((a,b)=>{const ia=orderC.indexOf(a.c),ib=orderC.indexOf(b.c);return (ia<0?99:ia)-(ib<0?99:ib);});
   const mesNeto=concepts.reduce((s,o)=>s+(o.hasMes?o.mes:0),0);
   const anioNeto=concepts.reduce((s,o)=>s+o.anio,0);
   const cfIng=opCF.filter(r=>r.flujo_tipo==='ingreso').reduce((s,r)=>s+(+r.importe_eur||0),0);
   const cfGas=opCF.filter(r=>r.flujo_tipo==='gasto').reduce((s,r)=>s+(+r.importe_eur||0),0);
   const cfDep=cashflow.filter(r=>r.flujo_tipo==='deposito').reduce((s,r)=>s+(+r.importe_eur||0),0);
   const fmtF=f=>{const m=/^\d{4}-(\d{2})-(\d{2})/.exec(f||"");return m?m[2]+"."+m[1]:"—";};
+  // monthly buckets for chart
+  const bm={};opCF.forEach(r=>{const m=(r.fecha||'').slice(0,7);if(!m)return;if(!bm[m])bm[m]={mm:m,ing:0,gas:0};bm[m][r.flujo_tipo==='ingreso'?'ing':'gas']+=(+r.importe_eur||0);});
+  const CM=Object.values(bm).sort((a,b)=>a.mm<b.mm?-1:1);
 
-  const Section=({no,title,hint,children})=>h("section",{style:{margin:"26px 0"}},
-    h("div",{style:{display:"flex",alignItems:"baseline",gap:11,marginBottom:14,borderBottom:`2px solid ${T.brd}`,paddingBottom:8}},
-      h("span",{className:"num",style:{fontSize:12,color:T.acc,fontWeight:700,fontFamily:"'Playfair Display',serif"}},no),
-      h("h3",{style:{fontSize:17,fontWeight:700,color:T.txt,margin:0}},title),
-      hint&&h("span",{style:{marginLeft:"auto",fontSize:12,color:T.mut}},hint)
-    ),
-    children
-  );
-  const DL=({pairs})=>h("div",null,pairs.map(([l,v],i)=>h("div",{key:i,style:{display:"flex",justifyContent:"space-between",gap:14,padding:"6px 0",borderBottom:i<pairs.length-1?`1px solid ${T.brd}`:"none",fontSize:13}},
-    h("span",{style:{color:T.mut}},l),h("span",{className:"num",style:{fontWeight:600,textAlign:"right"}},v)
-  )));
-  const Tbl=({head,rows})=>h("table",{style:{width:"100%",borderCollapse:"collapse",fontSize:13}},
-    h("thead",null,h("tr",null,head.map((c,i)=>h("th",{key:i,style:{textAlign:i===0?"left":"right",padding:"9px 12px",fontSize:11,background:T.tHd||T.aLt,color:T.hd||T.mut,fontWeight:700,textTransform:"uppercase",letterSpacing:.5}},c)))),
-    h("tbody",null,rows)
-  );
-  const KPI=(k,v,s,c)=>h(Card,{style:{padding:14,position:"relative"}},
-    h("div",{style:{position:"absolute",top:15,right:14,width:8,height:8,borderRadius:"50%",background:c}}),
-    h("div",{style:{fontSize:10,textTransform:"uppercase",letterSpacing:.7,color:T.mut,fontWeight:700,marginBottom:5}},k),
-    h("div",{className:"num",style:{fontSize:20,fontWeight:800,color:T.txt}},v),
-    s&&h("div",{style:{fontSize:11,color:T.mut,marginTop:2}},s)
-  );
+  function cfChart(CMx){
+    const arr=CMx.slice(-16); if(!arr.length)return "";
+    const mx=Math.max(1,...arr.map(m=>Math.max(+m.ing||0,Math.abs(+m.gas||0))));
+    const W=980,Hh=200,padT=14,padB=24,y0=padT+(Hh-padT-padB)/2,half=(Hh-padT-padB)/2;
+    const n=arr.length,step=(W-24)/n,bw=Math.min(24,step-8);
+    let bars="",labs="",pts=[];
+    arr.forEach((m,i)=>{const ing=+m.ing||0,gas=Math.abs(+m.gas||0),cx=12+step*i+step/2;
+      const ih=ing/mx*half,gh=gas/mx*half;
+      bars+=`<rect class="bar" x="${(cx-bw/2).toFixed(1)}" y="${(y0-ih).toFixed(1)}" width="${bw}" height="${ih.toFixed(1)}" rx="3" fill="#2F7D53"></rect>`;
+      bars+=`<rect class="bar" x="${(cx-bw/2).toFixed(1)}" y="${y0}" width="${bw}" height="${gh.toFixed(1)}" rx="3" fill="#D98A8A"></rect>`;
+      const net=ing-gas,ny=y0-(net/mx*half);pts.push([cx,ny]);
+      labs+=`<text x="${cx.toFixed(1)}" y="${Hh-7}" text-anchor="middle" font-size="9.5" fill="#9AA394">${m.mm.slice(5)}/${m.mm.slice(2,4)}</text>`;});
+    const line=pts.map((q,i)=>(i?"L":"M")+q[0].toFixed(1)+" "+q[1].toFixed(1)).join(" ");
+    const netp=`<path d="${line}" fill="none" stroke="#18271C" stroke-width="1.6" stroke-linejoin="round" opacity=".85"/>`+pts.map(q=>`<circle cx="${q[0].toFixed(1)}" cy="${q[1].toFixed(1)}" r="2.5" fill="#18271C"/>`).join("");
+    return `<svg viewBox="0 0 ${W} ${Hh}" width="100%" style="display:block"><line x1="8" y1="${y0}" x2="${W-8}" y2="${y0}" stroke="#E7E4DB"/>${bars}${netp}${labs}</svg>`;
+  }
+
+  const chip=(l,v)=>v?`<span class="chip"><b>${esc(l)}</b> ${esc(v)}</span>`:"";
+  // timeline
+  const parseD=s=>{const m=/^(\d{2})\.(\d{2})\.(\d{4})$/.exec(s||"");return m?+(m[3]+m[2]+m[1]):(s&&/^\d{4}$/.test(s)?+(s+"0101"):0);};
+  const tsort=tenants.slice();
+  const all=tenants.map(t=>({...t,s:parseD(t.start_date),e:parseD(t.end_date)||+(curY+"0101")})).filter(t=>t.s);
+  const minS=all.length?Math.min(...all.map(t=>t.s)):0,maxE=all.length?Math.max(...all.map(t=>t.e)):1;
+  const toX=d=>((d-minS)/((maxE-minS)||1))*100;
+  const tcol=["#6FBF95","#7FA8C0","#C99A6B","#8CA0B8","#B0A48F"];
+  const segs=all.map((t,i)=>`<div class="seg" style="left:${toX(t.s).toFixed(1)}%;width:${Math.max(2,toX(t.e)-toX(t.s)).toFixed(1)}%;background:${tcol[i%tcol.length]};${t.activo?'box-shadow:0 0 0 2px #2F7D53':''}"></div>`).join("");
+
+  const vlast=vorschuss.length?+vorschuss[vorschuss.length-1].mes:0;
+
+  const K=(k,v,s,c)=>`<div class="kpi"><span class="dot" style="background:${c}"></span><div class="k">${esc(k)}</div><div class="v num">${v}</div><div class="s">${esc(s)}</div></div>`;
+
+  const crow=o=>{
+    const pend=!o.hasMes&&!o.once&&o.anio!==0;
+    const mesCell=o.once?`<span class="muted" style="font-size:11.5px">puntual</span>`:(pend?`<span class="pend">pendiente</span>`:`<span class="num ${o.mes>=0?'pos':'neg'}">${o.hasMes?eur(o.mes):"—"}</span>`);
+    const fch=pend?`<span class="pend">— falta cargo</span>`:`<span class="fch num">${o.hasMes?fmtF(o.fechaMes):"—"}</span>`;
+    const ac=o.once?'once':(o.anio>=0?'pos':'neg');
+    return `<tr><td><span class="dotc" style="background:${o.dot}"></span>${esc(o.c)}</td><td>${fch}</td><td>${mesCell}</td><td><span class="num ${ac}">${eur(o.anio)}</span></td></tr>`;
+  };
+
+  const app=`
+   <div class="head">
+     <div class="flag"><div class="fg">${FLAG[p.country]||""}</div><div class="u num">${esc(p.miteigentumsanteil||'')}</div></div>
+     <div class="eye">Portafolio · Inmueble</div><h1 class="serif">${esc(p.name)}</h1>
+     <div class="addr">${esc(p.address||"")}${p.unit?" · "+esc(p.unit):""}</div>
+     <div class="chips">${p.status_label?`<span class="chip st">${esc(p.status_label)}</span>`:""}${chip("MEA",p.miteigentumsanteil)}${chip("Eigentümerin",p.owner)}${chip("Verwaltung",p.verwaltung)}</div>
+   </div>
+   <div class="kpis">
+     ${K("Renta actual",rentaActual?eur0(rentaActual):"—",tAct?("Warmmiete · hasta "+(tAct.end_date||"")):"vacante","#2F7D53")}
+     ${K("Resultado del mes",eur(mesNeto),mesLabel,"#18271C")}
+     ${K("Saldo crédito",eur0(saldoTot),p.saldo_fecha?("Actualizado "+p.saldo_fecha):(loans.length+" Darlehen"),"#2B4C8C")}
+     ${K("Cuota / mes",eur(totalRate),"Kapitaldienst","#B85C2C")}
+   </div>
+   ${cashflow.length?`<section>
+     <div class="sh"><span class="no">01</span><h2>Cashflow real · Lupa</h2><span class="hint">en vivo · ${cashflow.length} mov.</span></div>
+     <div class="card">
+       <div class="cf-top">
+         <div class="stat"><div class="k"><i style="background:#2F7D53"></i>Ingresos</div><div class="v num" style="color:#2F7D53">${eur0(cfIng)}</div></div>
+         <div class="stat"><div class="k"><i style="background:#B23B3B"></i>Gastos</div><div class="v num" style="color:#B23B3B">${eur0(cfGas)}</div></div>
+         <div class="stat"><div class="k"><i style="background:#18271C"></i>Neto operativo</div><div class="v num">${eur0(cfIng+cfGas)}</div></div>
+         <div class="stat"><div class="k"><i style="background:#7A5AAE"></i>Depósitos</div><div class="v num" style="color:#7A5AAE">${eur0(cfDep)}</div></div>
+       </div>
+       <div class="legend"><span><i style="background:#2F7D53"></i>Ingresos</span><span><i style="background:#D98A8A"></i>Gastos</span><span><span class="ln"></span>Neto mensual</span></div>
+       ${cfChart(CM)}
+       <div class="tbx"><table class="cft"><thead><tr><th>Concepto</th><th>Fecha</th><th>${esc(mesLabel)}</th><th>Año ${curY}</th></tr></thead><tbody>
+         ${concepts.map(crow).join("")}
+         <tr class="tot"><td>Resultado</td><td></td><td><span class="num ${mesNeto>=0?'pos':'neg'}">${eur(mesNeto)}</span></td><td><span class="num ${anioNeto>=0?'pos':'neg'}">${eur(anioNeto)}</span></td></tr>
+       </tbody></table></div>
+       <div class="muted" style="font-size:11.5px;margin-top:8px">Mes en curso: los cargos que aún no debitan aparecen como “pendiente”.</div>
+     </div>
+   </section>`:""}
+   ${loans.length?`<section>
+     <div class="sh"><span class="no">02</span><h2>Financiación</h2><span class="hint">${p.saldo_fecha?("Saldo al "+p.saldo_fecha+" · "):""}${loans.map(l=>l.zins_pct+"%").join(" / ")}</span></div>
+     <div class="grid2">${loans.map(l=>`<div class="loan"><div class="top"><span class="bk">${esc(l.bank)}</span><span class="sal num">${eur(l.saldo)}</span></div>
+       <div class="mini">
+         <span class="l">Ursprung</span><span class="r num">${eur0(l.ursprung)}</span>
+         <span class="l">Zinssatz</span><span class="r num">${esc(l.zins_pct)} %</span>
+         <span class="l">Rate/mes</span><span class="r num">${eur(l.rate_monthly)}</span>
+         <span class="l">Zinsbindung</span><span class="r num">${esc(l.zinsbindung||"—")}</span>
+         <span class="l">Kreditlaufzeit</span><span class="r num">${esc(l.laufzeit||"—")}</span>
+         ${p.saldo_fecha?`<span class="l">Saldo al</span><span class="r num">${esc(p.saldo_fecha)}</span>`:""}
+       </div></div>`).join("")}</div>
+   </section>`:""}
+   ${tenants.length?`<section>
+     <div class="sh"><span class="no">03</span><h2>Inquilinos</h2><span class="hint">histórico completo</span></div>
+     <div class="card"><div class="tl"><div class="track">${segs}</div></div>
+       ${tsort.map(t=>{const pend=!t.activo&&+t.kaution>0;return `<div class="tcard"><span class="tag ${t.activo?'live':'past'}">${t.activo?'ACTUAL':'—'}</span><span class="nm">${esc(t.name)}</span><span class="dts num">${esc(t.start_date||"")} → ${esc(t.end_date||"?")}</span><span class="dts">${[t.tipo,t.renta?eur0(t.renta):null,t.personas?t.personas+" Pers.":null].filter(Boolean).map(esc).join(" · ")}</span>${pend?`<span class="kpend">${eur0(t.kaution)}<small>Pendiente devolución</small></span>`:(t.activo&&+t.kaution>0?`<span class="dts" style="margin-left:auto">Kaution ${eur0(t.kaution)}</span>`:"")}</div>`;}).join("")}
+     </div>
+   </section>`:""}
+   ${(weg.length||grundsteuer.length)?`<section>
+     <div class="sh"><span class="no">04</span><h2>WEG-Jahresabrechnung & Verwaltung</h2><span class="hint">${esc(p.verwaltung||"")}${vlast?" · Vorschuss "+eur0(vlast)+"/mes":""}</span></div>
+     <div class="card">
+       ${weg.length?`<div class="tbx"><table class="t"><thead><tr><th>Jahr</th><th>umlagef.</th><th>nicht uml.</th><th>Rücklage</th><th>Vorschuss</th><th>Ergebnis</th></tr></thead><tbody>
+       ${weg.map(r=>`<tr><td class="num">${r.jahr}</td><td class="num">${eur(r.umlagef)}</td><td class="num">${eur(r.nicht_uml)}</td><td class="num">${eur(r.ruecklage)}</td><td class="num">${eur(r.vorschuss)}</td><td class="num" style="font-weight:700;color:${r.ergebnis>=0?'#2F7D53':'#B23B3B'}">${eur(r.ergebnis)} <span class="muted" style="font-size:10px">${esc(r.tipo||"")}</span></td></tr>`).join("")}
+       </tbody></table></div>`:""}
+       ${grundsteuer.length?`<table class="t" style="margin-top:14px"><thead><tr><th>Grundsteuer B</th><th>Betrag</th></tr></thead><tbody>${grundsteuer.map(g=>`<tr><td class="num">${g.jahr}</td><td class="num">${eur(g.betrag)}</td></tr>`).join("")}</tbody></table>`:""}
+     </div>
+   </section>`:""}
+   ${(strom||stromEntries.length)?`<section>
+     <div class="sh"><span class="no">05</span><h2>Proveedores</h2><span class="hint">contratos del depa</span></div>
+     <div class="card">
+       ${strom?`<div class="pv"><div><span class="t">Strom</span> · ${esc(strom.proveedor||"")}<div class="d">${[strom.kundennr&&("Kundennr. "+strom.kundennr),strom.titular&&("Titular: "+strom.titular)].filter(Boolean).map(esc).join(" · ")}</div></div><div class="amt d">laufend</div></div>`:""}
+       ${stromEntries.map(e=>`<div class="pv"><div><span class="t">${esc(e.periodo)}</span></div><div class="d">${esc(e.detalle)}</div></div>`).join("")}
+     </div>
+   </section>`:""}
+   ${setup.length?`<section>
+     <div class="sh"><span class="no">06</span><h2>Adecuación & inversión</h2><span class="hint">Reforma + Mobiliario</span></div>
+     <div class="card">
+       ${(()=>{const mx=Math.max(...setup.map(s=>+s.betrag||0),1);return setup.slice().sort((a,b)=>b.betrag-a.betrag).map(s=>`<div class="sb"><span class="lab">${esc(s.item)}</span><span class="track"><span class="fill" style="width:${(+s.betrag/mx*100).toFixed(1)}%"></span></span><span class="val num">${eur0(s.betrag)}</span></div>`).join("");})()}
+       <div class="sb" style="border-top:1px solid var(--line);margin-top:8px;padding-top:9px"><span class="lab" style="font-weight:700">Total inversión</span><span class="track" style="visibility:hidden"></span><span class="val num" style="font-weight:800">${eur0(setup.reduce((s,r)=>s+(+r.betrag||0),0))}</span></div>
+     </div>
+   </section>`:""}
+   <section>
+     <div class="sh"><span class="no">07</span><h2>Datos de compra</h2></div>
+     <div class="card"><div class="kv"><div class="lab">Adquisición</div><div class="val">${esc(p.kauf_kaufvertrag||"—")}</div><div class="lab">Besitzübergang</div><div class="val">${esc(p.kauf_besitzuebergang||"—")}</div><div class="lab">Veräußerer</div><div class="val">${esc(p.kauf_verkaeufer||"—")}</div><div class="lab">Kaufpreis / Finanz.</div><div class="val num">${eur0(p.kaufpreis)}</div><div class="lab">Inversión total</div><div class="val num">${eur0(p.inversion_total)}</div></div></div>
+   </section>
+   ${alerts.length?`<section>
+     <div class="sh"><span class="no">08</span><h2>Alertas & pendientes</h2></div>
+     <div>${alerts.map(a=>`<div class="al ${a.nivel==='r'?'r':'y'}"><span class="ic">${a.nivel==='r'?'!':'i'}</span><div><b>${esc(a.titulo)}</b>${esc(a.detalle)}</div></div>`).join("")}</div>
+   </section>`:""}
+  `;
 
   return h("div",null,
-    h("div",{style:{display:"flex",alignItems:"center",gap:12,marginBottom:20}},
-      h("button",{onClick:onBack,style:{border:"none",background:T.card,borderRadius:8,padding:"6px 12px",cursor:"pointer",fontSize:13,color:T.acc,fontWeight:600}},"← Portafolio"),
-      h("div",{style:{fontSize:11,padding:"2px 10px",borderRadius:99,background:COUNTRY_COLOR[p.country],color:COUNTRY_TXT[p.country],fontWeight:700}},COUNTRY_FLAG[p.country]+" "+p.country)
+    h("div",{style:{display:"flex",alignItems:"center",gap:12,marginBottom:16}},
+      h("button",{onClick:onBack,style:{border:"none",background:T.card,borderRadius:8,padding:"6px 12px",cursor:"pointer",fontSize:13,color:T.acc,fontWeight:600,border:`1px solid ${T.brd}`}},"← Portafolio")
     ),
-    h("h2",{className:"serif",style:{fontSize:28,fontWeight:800,color:T.txt,marginBottom:4}},p.name),
-    h("div",{style:{fontSize:13,color:T.mut,marginBottom:4}},p.address),
-    h("div",{style:{display:"flex",flexWrap:"wrap",gap:14,fontSize:12.5,color:T.mut,marginBottom:20}},
-      p.status_label&&h("span",{style:{background:T.aLt,color:T.acc,padding:"2px 10px",borderRadius:99,fontWeight:600}},p.status_label),
-      p.unit&&h("span",null,h("b",null,"Einheit: "),p.unit),
-      p.miteigentumsanteil&&h("span",null,h("b",null,"MEA: "),p.miteigentumsanteil),
-      p.owner&&h("span",null,h("b",null,"Eigentümerin: "),p.owner),
-      p.verwaltung&&h("span",null,h("b",null,"Verwaltung: "),p.verwaltung)
-    ),
-    // KPIs v2
-    h("div",{style:{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:6}},
-      KPI("Renta actual",rentaActual?eur0(rentaActual):"—",tAct?("Warmmiete · hasta "+(tAct.end_date||"")):"vacante",T.ok),
-      KPI("Resultado del mes",eur(mesNeto),mesNombre.charAt(0).toUpperCase()+mesNombre.slice(1),T.txt),
-      KPI("Saldo crédito",eur0(saldoTot),p.saldo_fecha?("Actualizado "+p.saldo_fecha):(loans.length+" Darlehen"),T.blue),
-      KPI("Cuota / mes",eur(totalRate),"Kapitaldienst",T.acc)
-    ),
-
-    // 01 Cashflow real por concepto
-    cashflow.length>0&&h(Section,{no:"01",title:"Cashflow real · Lupa",hint:"en vivo · "+cashflow.length+" mov."},
-      h(Card,null,
-        h("div",{style:{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:14}},
-          [["Ingresos",eur0(cfIng),T.ok],["Gastos",eur0(cfGas),T.err],["Neto operativo",eur0(cfIng+cfGas),(cfIng+cfGas)>=0?T.ok:T.err],["Depósitos",eur0(cfDep),T.mut]].map((x,i)=>h("div",{key:i,style:{border:`1px solid ${T.brd}`,borderRadius:11,padding:"11px 13px",background:T.bg}},
-            h("div",{style:{fontSize:10,textTransform:"uppercase",letterSpacing:.6,color:T.mut,fontWeight:700,marginBottom:4}},x[0]),
-            h("div",{className:"num",style:{fontSize:17,fontWeight:800,color:x[2]}},x[1])))
-        ),
-        h("table",{style:{width:"100%",borderCollapse:"collapse",fontSize:13}},
-          h("thead",null,h("tr",null,["Concepto","Fecha",mesNombre.charAt(0).toUpperCase()+mesNombre.slice(1),"Año "+curY].map((c,i)=>h("th",{key:i,style:{textAlign:i===0?"left":"right",padding:"8px 10px",fontSize:10,color:T.mut,fontWeight:700,textTransform:"uppercase",letterSpacing:.5,borderBottom:`1px solid ${T.brd}`}},c)))),
-          h("tbody",null,
-            concepts.map((o,i)=>{
-              const pend=!o.hasMes&&!o.once&&o.anio!==0;
-              const mesCell=o.once?h("span",{style:{color:T.mut,fontSize:11.5}},"puntual"):(pend?h("span",{style:{color:T.wrn,fontWeight:700,fontSize:11.5}},"pendiente"):h("span",{className:"num",style:{fontWeight:700,color:o.mes>=0?T.ok:T.err}},o.hasMes?eur(o.mes):"—"));
-              const fch=pend?h("span",{style:{color:T.wrn,fontSize:11.5}},"— falta cargo"):h("span",{className:"num",style:{color:T.mut,fontSize:12}},o.hasMes?fmtF(o.fechaMes):"—");
-              return h("tr",{key:i},
-                h("td",{style:{padding:"9px 10px",borderBottom:`1px solid ${T.bg}`,fontWeight:600}},h("span",{style:{display:"inline-block",width:8,height:8,borderRadius:"50%",background:o.dot,marginRight:8}}),o.c),
-                h("td",{style:{padding:"9px 10px",borderBottom:`1px solid ${T.bg}`,textAlign:"right"}},fch),
-                h("td",{style:{padding:"9px 10px",borderBottom:`1px solid ${T.bg}`,textAlign:"right"}},mesCell),
-                h("td",{className:"num",style:{padding:"9px 10px",borderBottom:`1px solid ${T.bg}`,textAlign:"right",fontWeight:700,color:o.once?T.blue:(o.anio>=0?T.ok:T.err)}},eur(o.anio))
-              );
-            }),
-            h("tr",{key:"tot"},
-              h("td",{style:{padding:"11px 10px",borderTop:`2px solid ${T.brd}`,fontWeight:800}},"Resultado"),
-              h("td",{style:{borderTop:`2px solid ${T.brd}`}}),
-              h("td",{className:"num",style:{padding:"11px 10px",borderTop:`2px solid ${T.brd}`,textAlign:"right",fontWeight:800,color:mesNeto>=0?T.ok:T.err}},eur(mesNeto)),
-              h("td",{className:"num",style:{padding:"11px 10px",borderTop:`2px solid ${T.brd}`,textAlign:"right",fontWeight:800,color:anioNeto>=0?T.ok:T.err}},eur(anioNeto))
-            )
-          )
-        ),
-        h("div",{style:{fontSize:11.5,color:T.mut,marginTop:8}},"Mes en curso: los cargos que aún no debitan aparecen como “pendiente”.")
-      )
-    ),
-
-    // 02 Financiación
-    loans.length>0&&h(Section,{no:"02",title:"Financiación",hint:(p.saldo_fecha?("Saldo al "+p.saldo_fecha+" · "):"")+loans.map(l=>l.zins_pct+"%").join(" / ")},
-      h("div",{style:{display:"grid",gridTemplateColumns:loans.length>1?"1fr 1fr":"1fr",gap:14}},
-        loans.map((l,i)=>h(Card,{key:i},
-          h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:10}},
-            h("span",{style:{fontWeight:700,fontSize:15,color:T.acc}},l.bank),
-            h("span",{className:"num",style:{fontWeight:800,fontSize:18}},eur(l.saldo))),
-          h(DL,{pairs:[["Darlehensbetrag",eur(+l.ursprung)],["Sollzinssatz",l.zins_pct+"%"],["Cuota mensual",eur(+l.rate_monthly)],["Zinsbindung",l.zinsbindung||"—"],["Kreditlaufzeit",l.laufzeit||"—"],p.saldo_fecha&&["Saldo al",p.saldo_fecha]].filter(Boolean)})
-        ))
-      )
-    ),
-
-    // 03 Inquilinos
-    tenants.length>0&&h(Section,{no:"03",title:"Inquilinos",hint:"Histórico completo"},
-      tenants.map((t,i)=>h("div",{key:i,style:{background:t.activo?T.oLt:T.card,border:`1px solid ${T.brd}`,borderLeft:`4px solid ${t.activo?T.ok:T.brd}`,borderRadius:10,padding:"13px 15px",marginBottom:10,display:"flex",flexWrap:"wrap",gap:"6px 14px",alignItems:"center"}},
-        h("span",{style:{fontSize:10.5,fontWeight:700,padding:"2px 8px",borderRadius:99,background:t.activo?T.oLt:T.bg,color:t.activo?T.ok:T.mut,border:`1px solid ${t.activo?T.ok:T.brd}`}},t.activo?"ACTUAL":"—"),
-        h("span",{style:{fontWeight:700,fontSize:15,color:T.acc}},t.name),
-        h("span",{className:"num",style:{fontSize:12,color:T.mut}},(t.start_date||"")+" → "+(t.end_date||"?")),
-        h("span",{style:{fontSize:12.5,color:T.mut}},[t.tipo,t.renta?eur0(+t.renta):null,t.personas?t.personas+" Pers.":null].filter(Boolean).join(" · ")),
-        (!t.activo&&+t.kaution>0)?h("span",{style:{marginLeft:"auto",textAlign:"right",color:T.err,fontWeight:700,fontSize:12.5}},eur0(+t.kaution),h("span",{style:{display:"block",fontSize:10,textTransform:"uppercase",letterSpacing:.4,opacity:.85}},"Pendiente devolución"))
-          :(t.activo&&+t.kaution>0?h("span",{style:{marginLeft:"auto",fontSize:12,color:T.mut}},"Kaution "+eur0(+t.kaution)):null),
-        t.notes&&h("div",{style:{flexBasis:"100%",marginTop:4,fontSize:11.5,color:T.wrn,background:T.wLt,borderRadius:6,padding:"5px 9px"}},"⚠ "+t.notes)
-      ))
-    ),
-
-    // 04 WEG + Grundsteuer + Verwaltung
-    (weg.length>0||grundsteuer.length>0||vorschuss.length>0)&&h(Section,{no:"04",title:"WEG-Jahresabrechnung & Verwaltung",hint:(p.verwaltung||"")+((vorschuss.length?(" · Vorschuss "+eur0(+ (vorschuss[vorschuss.length-1].mes))+"/mes"):""))},
-      h(Card,null,
-        weg.length>0&&h(Tbl,{head:["Jahr","umlagef.","nicht uml.","Rücklage","Vorschuss","Ergebnis"],
-          rows:weg.map((r,i)=>h("tr",{key:i,style:{background:i%2?T.card:T.bg}},
-            h("td",{className:"num",style:{padding:"7px 10px"}},r.jahr),
-            h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right"}},eur(r.umlagef)),
-            h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right"}},eur(r.nicht_uml)),
-            h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right"}},eur(r.ruecklage)),
-            h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right"}},eur(r.vorschuss)),
-            h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right",fontWeight:700,color:r.ergebnis>=0?T.ok:T.err}},eur(r.ergebnis)+" ",h("span",{style:{fontSize:10,color:T.mut}},r.tipo||""))
-          ))}),
-        grundsteuer.length>0&&h("div",{style:{marginTop:weg.length?16:0}},
-          h(Tbl,{head:["Grundsteuer B","Betrag"],rows:grundsteuer.map((r,i)=>h("tr",{key:i,style:{background:i%2?T.card:T.bg}},
-            h("td",{className:"num",style:{padding:"7px 10px"}},r.jahr),
-            h("td",{className:"num",style:{padding:"7px 10px",textAlign:"right"}},eur(r.betrag))))}))
-      )
-    ),
-
-    // 05 Proveedores
-    (strom||stromEntries.length>0)&&h(Section,{no:"05",title:"Proveedores",hint:"contratos del depa"},
-      h(Card,null,
-        strom&&h("div",{style:{display:"flex",justifyContent:"space-between",padding:"10px 0",borderBottom:`1px solid ${T.brd}`}},
-          h("div",null,h("span",{style:{fontWeight:700}},"Strom"),h("span",{style:{color:T.mut}}," · "+(strom.proveedor||"")),h("div",{style:{fontSize:12,color:T.mut}},[strom.kundennr&&("Kundennr. "+strom.kundennr),strom.titular&&("Titular: "+strom.titular)].filter(Boolean).join(" · "))),
-          h("div",{style:{fontSize:12,color:T.mut}},"laufend")),
-        stromEntries.map((e,i)=>h("div",{key:i,style:{display:"flex",justifyContent:"space-between",padding:"8px 0",borderBottom:i<stromEntries.length-1?`1px solid ${T.brd}`:"none",fontSize:13}},
-          h("span",{style:{color:T.mut}},e.periodo),h("span",{style:{fontWeight:500}},e.detalle)))
-      )
-    ),
-
-    // 06 Adecuación & inversión (reforma + mobiliario)
-    setup.length>0&&h(Section,{no:"06",title:"Adecuación & inversión",hint:"Reforma + Mobiliario"},
-      h(Card,null,
-        (()=>{const mx=Math.max(...setup.map(s=>+s.betrag||0),1);
-          return setup.slice().sort((a,b)=>b.betrag-a.betrag).map((s,i)=>h("div",{key:i,style:{display:"flex",alignItems:"center",gap:12,margin:"7px 0",fontSize:13}},
-            h("span",{style:{width:"48%",color:T.txt}},s.item),
-            h("span",{style:{flex:1,height:9,background:T.bg,borderRadius:99,overflow:"hidden"}},h("span",{style:{display:"block",height:"100%",width:(+s.betrag/mx*100).toFixed(1)+"%",background:`linear-gradient(90deg,#C77A46,${T.acc})`,borderRadius:99}})),
-            h("span",{className:"num",style:{width:90,textAlign:"right",fontWeight:700}},eur0(s.betrag))
-          ));})(),
-        h("div",{style:{display:"flex",justifyContent:"space-between",borderTop:`1px solid ${T.brd}`,marginTop:8,paddingTop:9}},
-          h("span",{style:{fontWeight:800}},"Total inversión"),
-          h("span",{className:"num",style:{fontWeight:800}},eur0(setup.reduce((s,r)=>s+(+r.betrag||0),0))))
-      )
-    ),
-
-    // 07 Datos de compra
-    h(Section,{no:"07",title:"Datos de compra"},
-      h(Card,null,h(DL,{pairs:[["Kaufvertrag",p.kauf_kaufvertrag||"—"],["Besitzübergang",p.kauf_besitzuebergang||"—"],["Verkäufer",p.kauf_verkaeufer||"—"],["Kaufpreis / Finanz.",eur0(+p.kaufpreis)],["Inversión total",eur0(+p.inversion_total)]]}))
-    ),
-
-    // 08 Alertas
-    alerts.length>0&&h(Section,{no:"08",title:"Alertas & pendientes"},
-      alerts.map((a,i)=>h("div",{key:i,style:{display:"flex",gap:11,padding:"12px 14px",borderRadius:10,marginBottom:9,fontSize:13,
-        background:a.nivel==='r'?T.eLt:T.wLt,border:`1px solid ${a.nivel==='r'?"#EEC9C4":"#EBDCBE"}`}},
-        h("span",{style:{fontWeight:800,color:a.nivel==='r'?T.err:T.wrn}},a.nivel==='r'?"!":"•"),
-        h("div",null,h("b",{style:{display:"block",color:T.acc,marginBottom:2}},a.titulo),a.detalle)
-      ))
-    )
+    h("div",{className:"pd2",dangerouslySetInnerHTML:{__html:app}})
   );
 }
 
