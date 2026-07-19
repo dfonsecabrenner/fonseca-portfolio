@@ -1124,6 +1124,7 @@ function PropertyDetailRich({property:p,onBack}){
   const now=new Date();
   const curMM=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
   const curY=String(now.getFullYear());
+  const todayNum=+(now.getFullYear()+String(now.getMonth()+1).padStart(2,"0")+String(now.getDate()).padStart(2,"0"));
   const mesN=now.toLocaleDateString("es-ES",{month:"long",year:"numeric"});
   const mesLabel=mesN.charAt(0).toUpperCase()+mesN.slice(1);
   const classify=(r)=>{
@@ -1242,7 +1243,7 @@ function PropertyDetailRich({property:p,onBack}){
    ${tenants.length?`<section>
      <div class="sh"><span class="no">03</span><h2>Inquilinos</h2><span class="hint">histórico completo</span></div>
      <div class="card"><div class="tl"><div class="track">${segs}</div></div>
-       ${tsort.map(t=>{const pend=!t.activo&&+t.kaution>0&&!t.kaution_devuelta;const devuelta=!t.activo&&+t.kaution>0&&t.kaution_devuelta;return`<div class="tcard"><span class="tag ${t.activo?'live':'past'}">${t.activo?'ACTUAL':'—'}</span><span class="nm">${esc(t.name)}</span><span class="dts num">${esc(t.start_date||"")} → ${esc(t.end_date||"?")}</span><span class="dts">${[t.tipo,t.renta?eur0(t.renta):null,t.personas?t.personas+" Pers.":null].filter(Boolean).map(esc).join(" · ")}</span>${pend?`<span class="kpend">${eur0(t.kaution)}<small>Pendiente devolución</small></span>`:(devuelta?`<span class="dts" style="margin-left:auto;color:var(--inc);font-weight:700">Kaution ${eur0(t.kaution)} · devuelta ✓</span>`:(t.activo&&+t.kaution>0?`<span class="dts" style="margin-left:auto">Kaution ${eur0(t.kaution)}</span>`:""))}</div>`;}).join("")}
+       ${tsort.map(t=>{const fut=parseD(t.start_date)>todayNum;const pend=!t.activo&&+t.kaution>0&&!t.kaution_devuelta&&!fut;const devuelta=!t.activo&&+t.kaution>0&&t.kaution_devuelta;return`<div class="tcard"><span class="tag ${t.activo?'live':'past'}">${t.activo?'ACTUAL':'—'}</span><span class="nm">${esc(t.name)}</span><span class="dts num">${esc(t.start_date||"")} → ${esc(t.end_date||"?")}</span><span class="dts">${[t.tipo,t.renta?eur0(t.renta):null,t.personas?t.personas+" Pers.":null].filter(Boolean).map(esc).join(" · ")}</span>${pend?`<span class="kpend">${eur0(t.kaution)}<small>Pendiente devolución</small></span>`:(devuelta?`<span class="dts" style="margin-left:auto;color:var(--inc);font-weight:700">Kaution ${eur0(t.kaution)} · devuelta ✓</span>`:(t.activo&&+t.kaution>0?`<span class="dts" style="margin-left:auto">Kaution ${eur0(t.kaution)}</span>`:""))}</div>`;}).join("")}
      </div>
    </section>`:""}
    ${(weg.length||grundsteuer.length)?`<section>
